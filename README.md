@@ -2,4 +2,4 @@
  A edit of the PvZ Decompile that adds MORE QoL features
 
 # Credits:
-Electr0Gunner for the fork.
+Electr0Gunner
