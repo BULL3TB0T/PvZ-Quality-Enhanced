@@ -43,14 +43,13 @@ void Achievements::GiveAchievement(AchievementType theAchivementType)
 		return;
 
 	mApp->mPlayerInfo->mEarnedAchievements[theAchivementType] = true;
-
-	SexyString aAchivementText = StrFormat(_S("[ACHIEVEMENT_%s_TITLE]"), ReturnAchievementName(theAchivementType).c_str());
-	SexyString aMessage = TodReplaceString(_S("[ACHIEVEMENT_ACHIEVED]"), _S("{ACHIEVEMENT}"), aAchivementText);
-
-	if(mApp->mBoard)
-		mApp->mBoard->DisplayAdvice(aMessage, MESSAGE_STYLE_HINT_FAST, AdviceType::ADVICE_NONE);
-
 	mApp->PlaySample(SOUND_ACHIEVEMENT);
+	if (mApp->mBoard)
+	{
+		SexyString aAchivementText = StrFormat(_S("[ACHIEVEMENT_%s_TITLE]"), ReturnAchievementName(theAchivementType).c_str());
+		SexyString aMessage = TodReplaceString(_S("[ACHIEVEMENT_ACHIEVED]"), _S("{ACHIEVEMENT}"), aAchivementText);
+		mApp->mBoard->DisplayAdvice(aMessage, MESSAGE_STYLE_HINT_FAST, AdviceType::ADVICE_NONE);
+	}
 }
 
 void Achievements::InitAchievement()
@@ -58,27 +57,21 @@ void Achievements::InitAchievement()
 	if (!mApp || !mApp->mPlayerInfo)
 		return;
 
-	if (mApp->HasFinishedAdventure()) {
+	if (mApp->HasFinishedAdventure())
 		GiveAchievement(AchievementType::ACHIEVEMENT_HOME_SECURITY);
-	}
 
-	if (mApp->EarnedGoldTrophy()) {
+	if (mApp->EarnedGoldTrophy())
 		GiveAchievement(AchievementType::ACHIEVEMENT_NOBEL_PEAS_PRIZE);
-	}
 
-	if (mApp->CanSpawnYetis()) {
+	if (mApp->CanSpawnYetis())
 		GiveAchievement(AchievementType::ACHIEVEMENT_ZOMBOLOGIST);
-	}
 
 	int aTreeSize = mApp->mPlayerInfo->mChallengeRecords[GAMEMODE_TREE_OF_WISDOM - 1];
-	if (aTreeSize >= 100) {
+	if (aTreeSize >= 100)
 		GiveAchievement(AchievementType::ACHIEVEMENT_TOWERING_WISDOM);
-	}
 
 	if (mApp->GetNumTrophies(ChallengePage::CHALLENGE_PAGE_CHALLENGE) >= mApp->GetTotalTrophies(ChallengePage::CHALLENGE_PAGE_CHALLENGE))
-	{
 		GiveAchievement(AchievementType::ACHIEVEMENT_BEYOND_THE_GRAVE);
-	}
 }
 
 SexyString Achievements::ReturnAchievementName(int theAchivementIndex)

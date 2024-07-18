@@ -10,13 +10,13 @@
 class ChallengePagesDialog : public LawnDialog, public Sexy::SliderListener
 {
 public:
-	LawnApp* mApp;
-	Sexy::Slider* mSlider;
-	LawnStoneButton* mPageButtons[MAX_CHALLENGE_PAGES];
+	LawnApp*					mApp;
+	Sexy::Slider*				mSlider;
+	LawnStoneButton*			mPageButtons[MAX_CHALLENGE_PAGES];
 	Rect						mPageButtonRects[MAX_CHALLENGE_PAGES];
 	float						mScrollPosition;
 	float						mScrollAmount;
-	const float					mBaseScrollSpeed = 1.0f;
+	const float					mBaseScrollSpeed = 1.5f;
 	const float					mScrollAccel = 0.1f;
 	float						mMaxScrollPosition;
 	Rect						mClipRect;

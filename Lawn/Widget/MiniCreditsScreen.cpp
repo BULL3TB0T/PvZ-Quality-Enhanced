@@ -66,15 +66,11 @@ void MiniCreditsScreen::Draw(Graphics* g)
 	TodDrawString(g, "Laura Shigihara", 120, 500, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
 	TodDrawString(g, "Tod Semple", 120, 520, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
 
-	TodDrawString(g, "Quality of The Lawn Team \n", 400, 380, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
-	TodDrawString(g, "Electr0Gunner\n", 400, 400, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
-	TodDrawString(g, "BULLETBOT\n", 400, 420, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
-
+	TodDrawString(g, "Enhanced Team \n", 400, 380, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
+	TodDrawString(g, "BULLETBOT\n", 400, 400, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
+	
 	TodDrawString(g, "Special Thanks \n", 630, 420, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
-	TodDrawString(g, "InLiothixie\n", 630, 440, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
-	TodDrawString(g, "PvZ Modding Association Members\n", 630, 460, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
-	TodDrawString(g, "Yukinonon\n", 630, 480, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
-	TodDrawString(g, "timoox_\n", 630, 500, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
+	TodDrawString(g, "Electr0Gunner\n", 630, 440, Sexy::FONT_HOUSEOFTERROR16, TextColor, DS_ALIGN_CENTER);
 
 	//mMusicButton->Draw(g);
 }

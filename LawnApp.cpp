@@ -60,8 +60,7 @@ LawnApp* gLawnApp = nullptr;
 int gSlowMoCounter = 0;  
 bool isFastMode = false;  //the ingame fast mode
 
-
-const char* CLIENT_ID = "1243252904878542908";
+const char* CLIENT_ID = "1261368391885787348";
 
 bool LawnGetCloseRequest()
 {
@@ -127,9 +126,9 @@ LawnApp::LawnApp()
 	mDebugKeysEnabled = false;
 	isFastMode = false;
 	mProdName = "PlantsVsZombies";
-	mVersion = "v1.7";
-	mReconVersion = "PvZ: QoTL " + mVersion;
-	std::string aTitleName = "Plants vs. Zombies: QoTL";
+	mVersion = "v1.0";
+	mReconVersion = "PvZ: Enhanced " + mVersion;
+	std::string aTitleName = "Plants vs. Zombies: Enhanced";
 	aTitleName += " " + mVersion;
 #ifdef _DEBUG
 	mGitCommit = exec_getStr("git rev-parse --short HEAD");
@@ -1527,18 +1526,14 @@ bool LawnApp::UpdatePlayerProfileForFinishingLevel()
 		}
 
 		bool isChallengeLevel = IsWallnutBowlingLevel() || IsWhackAZombieLevel() || IsLittleTroubleLevel() || IsBungeeBlitzLevel() || IsStormyNightLevel() || mBoard->HasConveyorBeltSeedBank();
-		if (mBoard->mBackground == BACKGROUND_3_POOL && !mBoard->mPeashootersUsed && !isChallengeLevel) {
+		if (mBoard->mBackground == BACKGROUND_3_POOL && !mBoard->mPeashootersUsed && !isChallengeLevel)
 			GetAchievement(ACHIEVEMENT_DONT_PEA_IN_POOL);
-		}
-		if (mBoard->StageHasRoof() && !mBoard->mCatapultsUsed && !isChallengeLevel) {
+		if (mBoard->StageHasRoof() && !mBoard->mCatapultsUsed && !isChallengeLevel)
 			GetAchievement(ACHIEVEMENT_GROUNDED);
-		}
-		if (mBoard->StageIsNight() && !mBoard->mMushroomsUsed && !isChallengeLevel) {
+		if (mBoard->StageIsNight() && !mBoard->mMushroomsUsed && !isChallengeLevel)
 			GetAchievement(ACHIEVEMENT_NO_FUNGUS_AMONG_US);
-		}
-		if (mBoard->mBackground == BACKGROUND_1_DAY && mBoard->mMushroomsNCoffeeUsed && !mBoard->mUsedNonMushrooms && !isChallengeLevel) {
+		if (mBoard->mBackground == BACKGROUND_1_DAY && mBoard->mMushroomsNCoffeeUsed && !mBoard->mUsedNonMushrooms && !isChallengeLevel)
 			GetAchievement(ACHIEVEMENT_GOOD_MORNING);
-		}
 	}
 	else if (IsSurvivalMode())
 	{
@@ -1611,31 +1606,20 @@ void LawnApp::CheckForGameEnd()
 
 	if (mPlayedQuickplay)
 	{
-		KillBoard();
 		ShowGameSelector();
-		int result = Dialog::ID_NO;
-		if (mQuickLevel != FINAL_LEVEL)
-		{
-			LawnDialog* dialog = (LawnDialog*)DoDialog(DIALOG_MESSAGE, true, "Continue?", "Would you like to go to the next level in Quick Play?", "", Dialog::BUTTONS_YES_NO);
-			result = dialog->WaitForResult(true);
-		}
-
-		if (result == Dialog::ID_YES)
-		{
-			mQuickLevel++;
-			KillGameSelector();
-			StartQuickPlay();
-		}
 		return;
 	}
 
+	if (EarnedGoldTrophy())
+		GetAchievement(ACHIEVEMENT_NOBEL_PEAS_PRIZE);
+
 	bool aUnlockedNewChallenge = UpdatePlayerProfileForFinishingLevel();
 
-	bool forceAchievements = false;
+	bool aForceAchievements = false;
 	for (int aAchivement = 0; aAchivement < NUM_ACHIEVEMENTS; aAchivement++)
 	{
 		if (mPlayerInfo->mEarnedAchievements[aAchivement] && !mPlayerInfo->mShownedAchievements[aAchivement] && mAchievements->ReturnShowInAwards(aAchivement))
-			forceAchievements = true;
+			aForceAchievements = true;
 	}
 
 	if (IsAdventureMode())
@@ -1681,7 +1665,7 @@ void LawnApp::CheckForGameEnd()
 			}
 			else
 			{
-				if (!forceAchievements)
+				if (!aForceAchievements)
 					ShowChallengeScreen(ChallengePage::CHALLENGE_PAGE_SURVIVAL);
 				else
 					ShowAwardScreen(AwardType::AWARD_ACHIEVEMENTONLY, true);
@@ -1704,7 +1688,7 @@ void LawnApp::CheckForGameEnd()
 		}
 		else
 		{
-			if (!forceAchievements)
+			if (!aForceAchievements)
 				ShowChallengeScreen(ChallengePage::CHALLENGE_PAGE_PUZZLE);
 			else
 				ShowAwardScreen(AwardType::AWARD_ACHIEVEMENTONLY, true);
@@ -1720,7 +1704,7 @@ void LawnApp::CheckForGameEnd()
 		}
 		else
 		{
-			if (!forceAchievements)
+			if (!aForceAchievements)
 				ShowChallengeScreen(ChallengePage::CHALLENGE_PAGE_CHALLENGE);
 			else
 				ShowAwardScreen(AwardType::AWARD_ACHIEVEMENTONLY, true);
@@ -2243,9 +2227,7 @@ bool LawnApp::IsSurvivalMode()
 
 bool LawnApp::IsPuzzleMode()
 {
-	return
-		(mGameMode >= GameMode::GAMEMODE_SCARY_POTTER_1 && mGameMode <= GameMode::GAMEMODE_SCARY_POTTER_ENDLESS) ||
-		(mGameMode >= GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_1 && mGameMode <= GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS);
+	return mGameMode >= GameMode::GAMEMODE_SCARY_POTTER_1 && mGameMode <= GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS;
 }
 
 bool LawnApp::IsChallengeMode()
@@ -3496,22 +3478,25 @@ SexyString LawnApp::Pluralize(int theCount, const SexyChar* theSingular, const S
 int LawnApp::GetNumTrophies(ChallengePage thePage)
 {
 	int aNumTrophies = 0;
-
 	for (int i = 0; i < NUM_CHALLENGE_MODES; i++)
 	{
 		const ChallengeDefinition& aDef = GetChallengeDefinition(i);
-		if (aDef.mPage == thePage && HasBeatenChallenge(aDef.mChallengeMode))
-		{
+		if (aDef.mPage == thePage && aDef.mHasTrophy && HasBeatenChallenge(aDef.mChallengeMode))
 			aNumTrophies++;
-		}
 	}
-
 	return aNumTrophies;
 }
 
 int LawnApp::GetTotalTrophies(ChallengePage thePage)
 {
-	return thePage == CHALLENGE_PAGE_SURVIVAL ? 10 : thePage == CHALLENGE_PAGE_CHALLENGE ? 20 : thePage == CHALLENGE_PAGE_PUZZLE ? 18 : thePage == CHALLENGE_PAGE_LIMBO ? 0 : 0;
+	int aTotalTrophies = 0;
+	for (int i = 0; i < NUM_CHALLENGE_MODES; i++)
+	{
+		const ChallengeDefinition& aDef = GetChallengeDefinition(i);
+		if (aDef.mPage == thePage && aDef.mHasTrophy)
+			aTotalTrophies++;
+	}
+	return aTotalTrophies;
 }
 
 int LawnApp::TrophiesNeedForGoldSunflower()

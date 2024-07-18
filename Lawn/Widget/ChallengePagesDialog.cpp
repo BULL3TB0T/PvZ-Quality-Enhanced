@@ -16,6 +16,7 @@ ChallengePagesDialog::ChallengePagesDialog(LawnApp* theApp) : LawnDialog(theApp,
 
 	mScrollAmount = 0;
 	mScrollPosition = 0;
+	mMaxScrollPosition = 0;
 
 	mSlider = new Slider(IMAGE_CHALLENGE_SLIDERSLOT, IMAGE_OPTIONS_SLIDERKNOB2, -1, this);
 	mSlider->SetValue(max(0.0, min(mMaxScrollPosition, mScrollPosition)));
@@ -62,7 +63,8 @@ void ChallengePagesDialog::Draw(Graphics* g)
 	{
 		bool isSelected = aPage == mApp->mChallengeScreen->mPageIndex;
 		LawnStoneButton* aPageButton = mPageButtons[aPage];
-		aPageButton->mDisabled = isSelected || !mClipRect.Contains(mWidgetManager->mLastMouseX - mX, mWidgetManager->mLastMouseY - mY);
+		aPageButton->mDisabled = isSelected;
+		aPageButton->mMouseVisible = mClipRect.Contains(mWidgetManager->mLastMouseX - mX, mWidgetManager->mLastMouseY - mY);
 		aPageButton->mVisible = mApp->mChallengeScreen->IsPageUnlocked((ChallengePage)aPage);
 		int aHeight = 46;
 		int aOffset = 3;
@@ -76,9 +78,7 @@ void ChallengePagesDialog::Draw(Graphics* g)
 			maxScroll += aHeight + aOffset;
 		}
 		else
-		{
 			totalHidden++;
-		}
 	}
 	mMaxScrollPosition = max(0, maxScroll - mClipRect.mHeight);
 	g->ClearClipRect();

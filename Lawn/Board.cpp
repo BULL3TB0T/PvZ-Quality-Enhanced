@@ -1719,6 +1719,15 @@ void Board::UpdateLevelEndSequence()
 	mBoardFadeOutCounter--;
 	if (mBoardFadeOutCounter == 0)
 	{
+		if (mApp->mPlayedQuickplay && mApp->mQuickLevel != FINAL_LEVEL)
+		{
+			LawnDialog* dialog = (LawnDialog*)mApp->DoDialog(DIALOG_MESSAGE, true, "Continue?", "Would you like to go to the next level in Quick Play?", "", Dialog::BUTTONS_YES_NO);
+			if (dialog->WaitForResult(true) == Dialog::ID_YES)
+			{
+				mApp->mQuickLevel++;
+				mApp->StartQuickPlay();
+			}
+		}
 		mLevelComplete = true;
 		return;
 	}
