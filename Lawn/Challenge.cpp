@@ -5071,12 +5071,12 @@ void Challenge::LastStandUpdate()
 
 		if (mSurvivalStage == 0)
 		{
-			aButton->SetLabel("[START_ONSLAUGHT]");
+			aButton->mLabel = _S("[START_ONSLAUGHT]");
 			aButton->Resize(300, 559, 210, 46);
 		}
 		else
 		{
-			aButton->SetLabel("[CONTINUE_ONSLAUGHT]");
+			aButton->mLabel = _S("[CONTINUE_ONSLAUGHT]");
 			aButton->Resize(270, 559, 257, 46);
 		}
 	}
@@ -5487,7 +5487,7 @@ void Challenge::TreeOfWisdomOpenStore()
 {
 	TreeOfWisdomLeave();
 	StoreScreen* aStore = mApp->ShowStoreScreen();
-	aStore->mBackButton->SetLabel(_S("[STORE_BACK_TO_GAME]"));
+	aStore->mBackButton->mLabel = _S("[STORE_BACK_TO_GAME]");
 	aStore->mPage = STORE_PAGE_ZEN2;
 	aStore->WaitForResult(true);
 	mApp->mMusic->MakeSureMusicIsPlaying(MUSIC_TUNE_ZEN_GARDEN);

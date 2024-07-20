@@ -151,10 +151,12 @@ bool TodStringListReadFile(const char* theFileName)
 	return aSuccess;
 }
 
-void TodStringListLoad(const char* theFileName)
+bool TodStringListLoad(const char* theFileName)
 {
-	if (!TodStringListReadFile(theFileName))
+	bool aCanReadFile = TodStringListReadFile(theFileName);
+	if (!aCanReadFile)
 		TodErrorMessageBox(Sexy::StrFormat("Failed to load string list file '%s'", theFileName).c_str(), "Error");
+	return aCanReadFile;
 }
 
 SexyString TodStringListFind(const SexyString& theName)
@@ -173,7 +175,7 @@ SexyString TodStringListFind(const SexyString& theName)
 
 SexyString TodStringTranslate(const SexyString& theString)
 {
-	if (theString.size() >= 3 && theString[0] == '[')
+	if (theString.size() >= 3 && theString[0] == '[' && theString[theString.size() - 1] == ']')
 	{
 		SexyString aName = theString.substr(1, theString.size() - 2);  
 		return TodStringListFind(aName);
@@ -186,7 +188,7 @@ SexyString TodStringTranslate(const SexyChar* theString)
 	if (theString != nullptr)
 	{
 		int aLen = strlen(theString);
-		if (aLen >= 3 && theString[0] == '[')
+		if (aLen >= 3 && theString[0] == '[' && theString[aLen - 1] == ']')
 		{
 			SexyString aName(theString, 1, aLen - 2);  
 			return TodStringListFind(aName);

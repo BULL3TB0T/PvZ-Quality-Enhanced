@@ -6,8 +6,9 @@
 #include "../../SexyAppFramework/WidgetManager.h"
 #include "../System/PlayerInfo.h"
 #include "GameButton.h"
+#include "../../Sexy.TodLib/TodStringFile.h"
 
-ChallengePagesDialog::ChallengePagesDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_CHALLENGE_PAGES, true, _S("Page Selection"), _S(""), _S("Close Page Selection"), Dialog::BUTTONS_FOOTER)
+ChallengePagesDialog::ChallengePagesDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_CHALLENGE_PAGES, true, _S("[PAGE_SELECTION_HEADER]"), _S(""), _S("[CLOSE_PAGE_SELECTION]"), Dialog::BUTTONS_FOOTER)
 {
 	mApp = theApp;
 
@@ -74,7 +75,7 @@ void ChallengePagesDialog::Draw(Graphics* g)
 		if (aPageButton->mVisible)
 		{
 			DrawStoneButton(g, aPageButtonRect.mX, aPageButtonRect.mY, aPageButtonRect.mWidth, aPageButtonRect.mHeight,
-				(aPageButton->mIsDown && aPageButton->mIsOver && !aPageButton->mDisabled) ^ aPageButton->mInverted, aPageButton->mIsOver, aPageButton->mLabel, isSelected ? 175 : 255);
+				(aPageButton->mIsDown && aPageButton->mIsOver && !aPageButton->mDisabled) ^ aPageButton->mInverted, aPageButton->mIsOver, TodStringTranslate(aPageButton->mLabel), isSelected ? 175 : 255);
 			maxScroll += aHeight + aOffset;
 		}
 		else

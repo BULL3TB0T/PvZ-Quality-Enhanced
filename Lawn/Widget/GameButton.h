@@ -77,7 +77,6 @@ public:
 	/*inline*/ bool			IsMouseOver();
 	void					Update();
 	/*inline*/ void			Resize(int theX, int theY, int theWidth, int theHeight);
-	/*inline*/ void			SetLabel(const SexyString& theLabel);
 };
 
 class LawnStoneButton : public DialogButton
@@ -86,7 +85,6 @@ public:
 	LawnStoneButton(Image* theComponentImage, int theId, ButtonListener* theListener) : DialogButton(theComponentImage, theId, theListener) { }
 
 	virtual void			Draw(Graphics* g);
-	/*inline*/ void			SetLabel(const SexyString& theLabel);
 };
 
 class NewLawnButton : public DialogButton
@@ -106,7 +104,6 @@ public:
 	
     virtual void			Draw(Graphics* g);
 	virtual bool			IsPointVisible(int x, int y);
-    void					SetLabel(const SexyString& theLabel);
 	void					SetButtonOffset(int theNewX, int theNewY);
 };
 

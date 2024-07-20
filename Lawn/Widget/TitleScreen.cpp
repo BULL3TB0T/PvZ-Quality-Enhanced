@@ -41,7 +41,7 @@ TitleScreen::TitleScreen(LawnApp* theApp)
 	mStartButton->mDisabled = true;
 	mStartButton->mVisible = false;
 
-	mApp->mDetails = "In the Title Screen";
+	mApp->mDetails = _S("[DISCORD_TITLE_SCREEN]");
 }
 
 TitleScreen::~TitleScreen()

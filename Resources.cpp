@@ -1924,7 +1924,7 @@ bool Sexy::ExtractLoadingSoundsResources(ResourceManager *theManager)
 	return true;
 }
 
-static void* gResources[] =
+static void* gResources[RESOURCE_ID_MAX] =
 {
 	&IMAGE_BLANK,
 	&IMAGE_POPCAP_LOGO,
@@ -2591,8 +2591,7 @@ static void* gResources[] =
 	&IMAGE_REANIM_SELECTORSCREEN_WOODSIGN3_PRESS,
 	&IMAGE_SELECTORSCREEN_QUICKPLAY_BUTTON,
 	&IMAGE_SELECTORSCREEN_QUICKPLAY_BUTTON_HIGHLIGHT,
-	&IMAGE_CREDITS_BG,
-	NULL
+	&IMAGE_CREDITS_BG
 };
 
 Image* Sexy::LoadImageById(ResourceManager *theManager, int theId)
@@ -3246,7 +3245,6 @@ const char* Sexy::GetStringIdById(int theId)
 		case IMAGE_CHALLENGE_WINDOW_HIGHLIGHT_ID: return "IMAGE_CHALLENGE_WINDOW_HIGHLIGHT";
 		case IMAGE_CHALLENGE_BLANK_ID: return "IMAGE_CHALLENGE_BLANK";
 		case IMAGE_CHALLENGE_THUMBNAILS_ID: return "IMAGE_CHALLENGE_THUMBNAILS";
-		case IMAGE_CHALLENGE_BUTTONS_ID: return "IMAGE_CHALLENGE_BUTTONS";
 		case IMAGE_SURVIVAL_THUMBNAILS_ID: return "IMAGE_SURVIVAL_THUMBNAILS";
 		case IMAGE_LOCK_ID: return "IMAGE_LOCK";
 		case IMAGE_LOCK_OPEN_ID: return "IMAGE_LOCK_OPEN";

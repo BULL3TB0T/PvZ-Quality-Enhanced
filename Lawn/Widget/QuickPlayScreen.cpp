@@ -41,7 +41,7 @@ QuickPlayScreen::QuickPlayScreen(LawnApp* theApp)
     mRightButton = MakeNewButton(2, this, "", nullptr, Sexy::IMAGE_QUICKPLAY_RIGHT_BUTTON,
         Sexy::IMAGE_QUICKPLAY_RIGHT_BUTTON_HIGHLIGHT, Sexy::IMAGE_QUICKPLAY_RIGHT_BUTTON_HIGHLIGHT);
 
-    mPlayButton = MakeButton(3, this, "PLAY");
+    mPlayButton = MakeButton(3, this, _S("[PLAY_BUTTON]"));
 
     mCrazySeedsCheck = MakeNewCheckbox(4, this, theApp->mCrazySeeds);
     mCrazySeedsCheck->mVisible = true;
@@ -187,7 +187,7 @@ void QuickPlayScreen::Draw(Graphics* g)
     int posX = 100;
     g->DrawImage(Sexy::IMAGE_QUICKPLAY_WIDGET, posX, 0);
     TodDrawString(g, mApp->GetStageString(mApp->mQuickLevel).erase(0, 1), posX + (Sexy::IMAGE_QUICKPLAY_WIDGET->mWidth / 2), 30, Sexy::FONT_DWARVENTODCRAFT18GREENINSET, Color::White, DS_ALIGN_CENTER);
-    TodDrawString(g, "Crazy Dave Seeds", mCrazySeedsCheck->mX + 45, mCrazySeedsCheck->mY + 23, Sexy::FONT_DWARVENTODCRAFT18GREENINSET, Color::White, DS_ALIGN_LEFT);
+    TodDrawString(g, TodStringTranslate(_S("[CRAZY_DAVE_SEEDS]")), mCrazySeedsCheck->mX + 45, mCrazySeedsCheck->mY + 23, Sexy::FONT_DWARVENTODCRAFT18GREENINSET, Color::White, DS_ALIGN_LEFT);
 }
 
 void QuickPlayScreen::KeyDown(KeyCode theKey) {

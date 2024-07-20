@@ -88,8 +88,8 @@ ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
 	{ GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_8,                    11,  ChallengePage::CHALLENGE_PAGE_PUZZLE,      3,  2,  _S("[I_ZOMBIE_8]"), true },
 	{ GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_9,                    11,  ChallengePage::CHALLENGE_PAGE_PUZZLE,      3,  3,  _S("[I_ZOMBIE_9]"), true },
 	{ GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS,              11,  ChallengePage::CHALLENGE_PAGE_PUZZLE,      3,  4,  _S("[I_ZOMBIE_ENDLESS]"), false },
-	{ GameMode::GAMEMODE_UPSELL,                               10,  ChallengePage::CHALLENGE_PAGE_LIMBO,       3,  4,  _S("Upsell"), false },
-	{ GameMode::GAMEMODE_INTRO,                                10,  ChallengePage::CHALLENGE_PAGE_LIMBO,       2,  3,  _S("Intro"), false }
+	{ GameMode::GAMEMODE_UPSELL,                               10,  ChallengePage::CHALLENGE_PAGE_LIMBO,       3,  4,  _S("[UPSELL]"), false },
+	{ GameMode::GAMEMODE_INTRO,                                10,  ChallengePage::CHALLENGE_PAGE_LIMBO,       2,  3,  _S("[INTRO]"), false }
 };
 
 ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
@@ -109,7 +109,7 @@ ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
 	mUnlockStateCounter = 0;
 	TodLoadResources("DelayLoad_ChallengeScreen");
 
-	mBackButton = MakeNewButton(ChallengeScreen::ChallengeScreen_Back, this, _S("[BACK_TO_MENU]"), nullptr, Sexy::IMAGE_SEEDCHOOSER_BUTTON2, 
+	mBackButton = MakeNewButton(ChallengeScreen::ChallengeScreen_Back, this, _S("[BACK_TO_MENU_BUTTON]"), nullptr, Sexy::IMAGE_SEEDCHOOSER_BUTTON2,
 		Sexy::IMAGE_SEEDCHOOSER_BUTTON2_GLOW, Sexy::IMAGE_SEEDCHOOSER_BUTTON2_GLOW);
 	mBackButton->mTextDownOffsetX = 1;
 	mBackButton->mTextDownOffsetY = 1;
@@ -117,7 +117,7 @@ ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
 	mBackButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(42, 42, 90);
 	mBackButton->Resize(18, 568, 111, 26);
 
-	mChallengesButton = MakeNewButton(ChallengeScreen::ChallengeScreen_Selector, this, _S("Page Selection"), nullptr, Sexy::IMAGE_SEEDCHOOSER_BUTTON2,
+	mChallengesButton = MakeNewButton(ChallengeScreen::ChallengeScreen_Selector, this, _S("[PAGE_SELECTION_BUTTON]"), nullptr, Sexy::IMAGE_SEEDCHOOSER_BUTTON2,
 		Sexy::IMAGE_SEEDCHOOSER_BUTTON2_GLOW, Sexy::IMAGE_SEEDCHOOSER_BUTTON2_GLOW);
 	mChallengesButton->mTextDownOffsetX = 1;
 	mChallengesButton->mTextDownOffsetY = 1;
@@ -175,7 +175,7 @@ ChallengeScreen::ChallengeScreen(LawnApp* theApp, ChallengePage thePage)
 	mSlider->Resize(775, cChallengeRect.mY, 20, cChallengeRect.mHeight);
 	mSlider->mThumbOffsetX = -5;
 
-	mApp->mDetails = "In the Challenge Screen";
+	mApp->mDetails = _S("[DISCORD_CHALLENGE_SCREEN]");
 }
 
 void ChallengeScreen::SliderVal(int theId, double theVal)
@@ -418,60 +418,7 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 			{
 				aName = _S("?");
 			}
-
-			int aNameLen = aName.size();
-			if (aNameLen < 13)
-			{
-				TodDrawString(g, aName, aPosX + 52, aPosY + 96, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
-			}
-			else
-			{
-				int aHalfPos = (mPageIndex == CHALLENGE_PAGE_SURVIVAL && !aChallengeButton->mDisabled) ? 7 : (aNameLen / 2 - 1);
-				const SexyChar* aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
-				while(aSpacedChar[0]!=' ')
-				{
-					aHalfPos++;
-					aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
-					if(aSpacedChar[0]=='\0')
-					{
-						aHalfPos--;
-						aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
-						break;
-					}
-				}
-				aHalfPos--;
-				aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
-
-				
-				if (aSpacedChar == nullptr)
-				{
-					aSpacedChar = _S(aName.c_str(), _S(' '));
-				}
-
-				int aLine1Len = aNameLen;
-				int aLine2Len = 0;
-				if (aSpacedChar != nullptr)
-				{
-					aLine1Len = aSpacedChar - aName.c_str();
-					aLine2Len = aNameLen - aLine1Len - 1;
-				}
-				
-				auto topStr=aName.substr(0, aLine1Len+1);
-				auto botStr=aName.substr(aLine1Len + 1, aLine2Len);
-				if(botStr.empty())
-				{
-					TodDrawString(g, aName, aPosX + 52, aPosY + 96, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
-				}
-				else
-				{
-					TodDrawString(g, topStr, aPosX + 52, aPosY + 88, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
-					if (aLine2Len > 0)
-					{
-						TodDrawString(g, botStr, aPosX + 52, aPosY + 102, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
-					}
-				}
-			
-			}
+			TodDrawStringWrapped(g, aName, Rect(aPosX + 6, aPosY + 74, 94, 33), Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER_VERTICAL_MIDDLE);
 
 			int aRecord = mApp->mPlayerInfo->mChallengeRecords[theChallengeIndex];
 			if (theChallengeIndex == mUnlockChallengeIndex)
@@ -527,7 +474,7 @@ void ChallengeScreen::Draw(Graphics* g)
 
 	int aTrophiesGot = mApp->GetNumTrophies(mPageIndex);
 	int aTrophiesTotal = mApp->GetTotalTrophies(mPageIndex);
-	TodDrawString(g, aTrophiesTotal > 0 ? StrFormat(_S("%d/%d"), aTrophiesGot, aTrophiesTotal) : "None", 739, 73, Sexy::FONT_DWARVENTODCRAFT12, Color(255, 240, 0), DS_ALIGN_CENTER);
+	TodDrawString(g, aTrophiesTotal > 0 ? StrFormat(_S("%d/%d"), aTrophiesGot, aTrophiesTotal) : TodStringTranslate(_S("[TROPHY_NONE]")), 739, 73, Sexy::FONT_DWARVENTODCRAFT12, Color(255, 240, 0), DS_ALIGN_CENTER);
 	TodDrawImageScaledF(g, Sexy::IMAGE_TROPHY, 718, 26, 0.5f, 0.5f);
 
 	int aHighestRow = 0;
@@ -588,7 +535,7 @@ void ChallengeScreen::MouseWheel(int theDelta)
 
 SexyString ChallengeScreen::GetPageTitle(ChallengePage thePage)
 {
-	SexyString aTitle = "Unknown Page";
+	SexyString aTitle = _S("[UNKNOWN_PAGE]");
 	switch (thePage)
 	{
 	case ChallengePage::CHALLENGE_PAGE_CHALLENGE:
@@ -601,7 +548,7 @@ SexyString ChallengeScreen::GetPageTitle(ChallengePage thePage)
 		aTitle = _S("[PICK_AREA]");
 		break;
 	case ChallengePage::CHALLENGE_PAGE_LIMBO:
-		aTitle = _S("Limbo Page");
+		aTitle = _S("[LIMBO_PAGE]");
 		break;
 	}
 	return aTitle;

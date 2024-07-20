@@ -52,6 +52,7 @@
 #include "SexyAppFramework/BassMusicInterface.h"
 #include "SexyAppFramework/Dialog.h"
 #include "SexyAppFramework/resource.h"
+#include "SexyAppFramework/Debug.h"
 
 bool gIsPartnerBuild = false;
 bool gSlowMo = false;  
@@ -126,26 +127,9 @@ LawnApp::LawnApp()
 	mDebugKeysEnabled = false;
 	isFastMode = false;
 	mProdName = "PlantsVsZombies";
-	mVersion = "v1.0";
+	mVersion = "v2.0";
 	mReconVersion = "PvZ: Enhanced " + mVersion;
-	std::string aTitleName = "Plants vs. Zombies: Enhanced";
-	aTitleName += " " + mVersion;
-#ifdef _DEBUG
-	mGitCommit = exec_getStr("git rev-parse --short HEAD");
-	if (mGitCommit != "") {
-		if (mGitCommit.back() == '\n')
-			mGitCommit.pop_back();
-	}
-	aTitleName += " DEBUG";
-	if (mGitCommit == "")
-	{
-		mGitCommit = "None";
-	}
-	else
-		aTitleName += " (" + mGitCommit + ")";
-#endif
-
-	mTitle = StringToSexyStringFast(aTitleName);
+	mTitle = _S("Plants vs. Zombies: Enhanced " + mVersion);
 	mCustomCursorsEnabled = false;
 	mPlayerInfo = nullptr;
 	mLastLevelStats = new LevelStats();
@@ -171,7 +155,6 @@ LawnApp::LawnApp()
 	mBigArrowCursor = LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_CURSOR1));
 	mDRM = nullptr;
 	mPlayedQuickplay = false;
-	StartDiscord();
 }
 
 LawnApp::~LawnApp()
@@ -747,8 +730,8 @@ void LawnApp::DoConfirmBackToMain()
 	LawnDialog* aDialog = (LawnDialog*)DoDialog(
 		Dialogs::DIALOG_CONFIRM_BACK_TO_MAIN, 
 		true, 
-		_S("Leave Game?"/*"[LEAVE_GAME]"*/),
-		_S("Do you want to return\nto the main menu?\n\nYour game will be saved."/*"[LEAVE_GAME_HEADER]"*/), 
+		_S("[LEAVE_GAME]"),
+		_S("[LEAVE_GAME_HEADER]"),
 		"", 
 		Dialog::BUTTONS_YES_NO
 	);
@@ -822,9 +805,9 @@ void LawnApp::DoPauseDialog()
 	LawnDialog* aDialog = (LawnDialog*)DoDialog(
 		Dialogs::DIALOG_PAUSED,
 		true,
-		_S("GAME PAUSED"/*"[GAME_PAUSED]"*/),
-		_S("Click to resume game"), 
-		_S("Resume Game"/*"[RESUME_GAME]"*/),
+		_S("[GAME_PAUSED]"),
+		_S("[GAME_PAUSED_HEADER]"),
+		_S("[RESUME_GAME]"),
 		Dialog::BUTTONS_FOOTER
 	);
 
@@ -934,25 +917,14 @@ void LawnApp::FinishCreateUserDialog(bool isYes)
 
 	SexyString aName = aNewUserDialog->GetName();
 
-	if (isYes && aName.empty())
+	if ((isYes && aName.empty()) || (mPlayerInfo == nullptr && (!isYes || aName.empty())))
 	{
 		DoDialog(
 			Dialogs::DIALOG_CREATEUSERERROR,
 			true,
-			_S("Enter Your Name"),
-			_S("Please enter your name to create a new user profile for storing high score data and game progress"),
-			_S("OK"),
-			Dialog::BUTTONS_FOOTER
-		);
-	}
-	else if (mPlayerInfo == nullptr && (!isYes || aName.empty()))
-	{
-		DoDialog(
-			Dialogs::DIALOG_CREATEUSERERROR,
-			true,
-			_S("Enter Your Name"/*"[ENTER_YOUR_NAME]"*/),
-			_S("Please enter your name to create a new user profile for storing high score data and game progress"/*"[ENTER_NEW_USER]"*/),
-			_S("OK"/*"[DIALOG_BUTTON_OK]"*/),
+			_S("[ENTER_YOUR_NAME]"),
+			_S("[ENTER_NEW_USER]"),
+			_S("[DIALOG_BUTTON_OK]"),
 			Dialog::BUTTONS_FOOTER
 		);
 	}
@@ -968,9 +940,9 @@ void LawnApp::FinishCreateUserDialog(bool isYes)
 			DoDialog(
 				Dialogs::DIALOG_CREATEUSERERROR,
 				true,
-				_S("Name Conflict"/*"[NAME_CONFLICT]"*/),
-				_S("The name you entered is already being used.  Please enter a unique player name"/*"[ENTER_UNIQUE_PLAYER_NAME]"*/),
-				_S("OK"/*"[DIALOG_BUTTON_OK]"*/),
+				_S("[NAME_CONFLICT]"),
+				_S("[ENTER_UNIQUE_PLAYER_NAME]"),
+				_S("[DIALOG_BUTTON_OK]"),
 				Dialog::BUTTONS_FOOTER
 			);
 		}
@@ -997,9 +969,8 @@ void LawnApp::DoConfirmDeleteUserDialog(const SexyString& theName)
 	DoDialog(
 		Dialogs::DIALOG_CONFIRMDELETEUSER, 
 		true, 
-		_S("Are You Sure"/*"[ARE_YOU_SURE]"*/), 
-		// StrFormat(TodStringTranslate(_S("[DELETE_USER_WARNING]")).c_str(), StringToSexyStringFast(theName))
-		StrFormat(_S("This will permanently remove '%s' from the player roster!"), theName.c_str()),
+		_S("[ARE_YOU_SURE]"),
+		TodReplaceString(_S("[DELETE_USER_WARNING]"), _S("{NAME}"), theName),
 		_S(""), 
 		Dialog::BUTTONS_YES_NO
 	);
@@ -1083,9 +1054,9 @@ void LawnApp::FinishRenameUserDialog(bool isYes)
 		DoDialog(
 			Dialogs::DIALOG_RENAMEUSERERROR,
 			true,
-			_S("Name Conflict"/*"[NAME_CONFLICT]"*/),
-			_S("The name you entered is already being used.  Please enter a unique player name"/*"[ENTER_UNIQUE_PLAYER_NAME]"*/),
-			_S("OK"/*"[DIALOG_BUTTON_OK]"*/),
+			_S("[NAME_CONFLICT]"),
+			_S("[ENTER_UNIQUE_PLAYER_NAME]"),
+			_S("[DIALOG_BUTTON_OK]"),
 			Dialog::BUTTONS_FOOTER
 		);
 		return;
@@ -1349,8 +1320,9 @@ void LawnApp::Init()
 	TodLog("3d supported: %u", is3dSupported);
 #endif
 
+	StartDiscord();
 	mStartTime = time(NULL);
-	mDetails = "Starting the Game";
+	mDetails = _S("[DISCORD_STARTING]");
 	UpdateDiscordState();
 
 	if (!mResourceManager->ParseResourcesFile("properties\\resources.xml"))
@@ -1830,10 +1802,12 @@ void LawnApp::UpdateFrames()
 		{
 			DiscordRichPresence discordPresence;
 			memset(&discordPresence, 0, sizeof(discordPresence));
-			discordPresence.state = mState.c_str();
-			discordPresence.details = mDetails.c_str();
-			discordPresence.largeImageKey = "logo";
-			discordPresence.largeImageText = mVersion.c_str();
+			SexyString aState = TodStringTranslate(mState);
+			discordPresence.state = aState.c_str();
+			SexyString aDetails = TodStringTranslate(mDetails);
+			discordPresence.details = aDetails.c_str();
+			SexyString aLargeImageText = _S(mVersion + " - " + TodStringTranslate("[LANGUAGE_NAME]"));
+			discordPresence.largeImageText = aLargeImageText.c_str();
 			discordPresence.startTimestamp = mStartTime;
 			Discord_UpdatePresence(&discordPresence);
 		}
@@ -1885,7 +1859,41 @@ void LawnApp::LoadingThreadProc()
 	if (!TodLoadResources("LoaderBar"))
 		return;
 
-	TodStringListLoad("Properties\\LawnStrings.txt");
+	std::string aPath = "languages";
+	WIN32_FIND_DATA aFindFileData;
+	HANDLE hFind = FindFirstFile((aPath + "\\*").c_str(), &aFindFileData);
+	DBG_ASSERT(hFind != INVALID_HANDLE_VALUE);
+	mStringProperties.clear();
+	do
+	{
+		std::string aFileName = aFindFileData.cFileName;
+		size_t aFileExtension = aFileName.find_last_of('.');
+		if (aFileExtension != std::string::npos && aFileName.substr(aFileExtension) == ".lang")
+		{
+			bool aIsLoaded = TodStringListLoad((aPath + "\\" + aFileName).c_str());
+			if (!aIsLoaded)
+				continue;
+			mLanguages[aFileName.substr(0, aFileExtension)] = mStringProperties;
+			mStringProperties.clear();
+		}
+	} while (FindNextFile(hFind, &aFindFileData) != 0);
+	FindClose(hFind);
+	DBG_ASSERT(!mLanguages.empty());
+	int aIndex = 0;
+	for (std::map<std::string, StringWStringMap>::iterator it = mLanguages.begin(); it != mLanguages.end(); ++it, ++aIndex)
+	{
+		if (it->first == mLanguage)
+		{
+			mLanguageIndex = aIndex;
+			break;
+		}
+	}
+	if (mLanguageIndex == -1)
+	{
+		mLanguage = mLanguages.begin()->first;
+		mLanguageIndex = 0;
+	}
+	LoadCurrentLanguage();
 
 	if (mTitleScreen)
 	{
@@ -3549,18 +3557,14 @@ void LawnApp::InitHook()
 SexyString LawnApp::GetMoneyString(int theAmount)
 {
 	int aValue = theAmount * 10;
+	SexyString aMoney = _S("[CURRENCY_STRING]");
 	if (aValue > 999999)
-	{
-		return StrFormat(_S("$%d,%03d,%03d"), aValue / 1000000, (aValue - aValue / 1000000 * 1000000) / 1000, aValue - aValue / 1000 * 1000);
-	}
+		aMoney = TodReplaceString(aMoney, _S("{AMOUNT}"), StrFormat(_S("%d,%03d,%03d"), aValue / 1000000, (aValue - aValue / 1000000 * 1000000) / 1000, aValue - aValue / 1000 * 1000));
 	else if (aValue > 999)
-	{
-		return StrFormat(_S("$%d,%03d"), aValue / 1000, aValue - aValue / 1000 * 1000);
-	}
+		aMoney = TodReplaceString(aMoney, _S("{AMOUNT}"), StrFormat(_S("%d,%03d"), aValue / 1000, aValue - aValue / 1000 * 1000));
 	else
-	{
-		return StrFormat(_S("$%d"), aValue);
-	}
+		aMoney = TodReplaceString(aMoney, _S("{AMOUNT}"), StrFormat(_S("%d"), aValue));
+	return aMoney;
 }
 
 SexyString LawnGetCurrentLevelName()
@@ -3615,25 +3619,25 @@ void LawnApp::GetAchievement(AchievementType theAchievementType)
 
 void LawnApp::UpdateDiscordState(SexyString def)
 {
-	SexyString State;
-	if (AlmanacDialog* dialog = (AlmanacDialog*)GetDialog(Dialogs::DIALOG_ALMANAC))
+	SexyString aState;
+	if (AlmanacDialog* aDialog = (AlmanacDialog*)GetDialog(Dialogs::DIALOG_ALMANAC))
 	{
-		if (dialog->mOpenPage == AlmanacPage::ALMANAC_PAGE_INDEX)
-			State = "Almanac (Index)";
-		else if (dialog->mOpenPage == AlmanacPage::ALMANAC_PAGE_ZOMBIES)
-			State = "Almanac (Zombies)";
-		else if (dialog->mOpenPage == AlmanacPage::ALMANAC_PAGE_PLANTS)
-			State = "Almanac (Plants)";
+		if (aDialog->mOpenPage == AlmanacPage::ALMANAC_PAGE_INDEX)
+			aState = _S("[DISCORD_ALMANAC_INDEX]");
+		else if (aDialog->mOpenPage == AlmanacPage::ALMANAC_PAGE_PLANTS)
+			aState = _S("[DISCORD_ALMANAC_PLANTS]");
+		else if (aDialog->mOpenPage == AlmanacPage::ALMANAC_PAGE_ZOMBIES)
+			aState = _S("[DISCORD_ALMANAC_ZOMBIES]");
 	}
 	else if (GetDialog(Dialogs::DIALOG_STORE))
-		State = "Store";
-	else if (NewOptionsDialog* dialog = (NewOptionsDialog*)GetDialog(Dialogs::DIALOG_NEWOPTIONS))
-		State = dialog->mAdvancedMode ? ("Advanced Options" + StrFormat(" (Page %d)", dialog->mAdvancedPage)) : "Options";
+		aState = _S("[DISCORD_STORE]");
+	else if (NewOptionsDialog* aDialog = (NewOptionsDialog*)GetDialog(Dialogs::DIALOG_NEWOPTIONS))
+		aState = aDialog->mAdvancedMode ? TodReplaceNumberString(_S("[DISCORD_ADVANCED_OPTIONS]"), _S("{PAGE}"), aDialog->mAdvancedPage) : _S("[DISCORD_OPTIONS]");
 	else if (GetDialog(Dialogs::DIALOG_USERDIALOG))
-		State = "Profiles";
+		aState = _S("[DISCORD_PROFILES]");
 	else
-		State = def;
-	mState = State;
+		aState = def;
+	mState = aState;
 }
 
 bool LawnApp::CanDoPinataMode()

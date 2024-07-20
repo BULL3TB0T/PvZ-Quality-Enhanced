@@ -312,7 +312,10 @@ public:
 	int						mSpeedModifier;
 	int						mQuickLevel;
 	bool					mCrazySeeds;
-	bool					mIs3dAccel; //fake bool
+	bool					mIs3dAccel;
+	std::string				mLanguage;
+	int						mLanguageIndex;
+	std::map<std::string, StringWStringMap> mLanguages;
 	bool					mSoftVSyncWait;
 	bool					mUserChanged3DSetting;
 	bool					mAutoEnable3D;
@@ -582,7 +585,10 @@ public:
 	bool					IsScreenSaver();
 	virtual bool			AppCanRestore();
 	virtual void			ShowFPS(bool show);
-	static LRESULT CALLBACK	WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);		
+	static LRESULT CALLBACK	WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+	void					SwitchLanguage();
+	void					LoadCurrentLanguage();
 };
 
 extern SexyAppBase* gSexyAppBase;

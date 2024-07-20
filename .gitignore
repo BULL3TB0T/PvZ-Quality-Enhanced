@@ -11,7 +11,6 @@
 *.mod
 *.smod
 
-/SexyAppFramework/Debug
 /.vs
 *.tlog
 *.log
@@ -21,5 +20,6 @@ Debug/LawnProject.exe
 /.vs/PlantsVsZombies/v17
 .vs/PlantsVsZombies/v17/.suo
 .vs/PlantsVsZombies/v17/Browse.VC.db
-/Debug/savefiles
 /enc_temp_folder
+/Debug/appdata
+/Debug/crash.txt

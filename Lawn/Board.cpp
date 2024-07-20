@@ -160,8 +160,10 @@ Board::Board(LawnApp* theApp)
 	mDebugTextMode = DebugTextMode::DEBUG_TEXT_NONE;
 	mMenuButton = new GameButton(0);
 	mMenuButton->mDrawStoneButton = true;
+	mMenuButton->mParentWidget = this;
 	mFastButton = new GameButton(2);
 	mFastButton->Resize(740, 30, IMAGE_FASTBUTTON->mWidth, 46);
+	mFastButton->mParentWidget = this;
 	mStoreButton = nullptr;
 	mIgnoreMouseUp = false;
 	mPeashootersUsed = false;
@@ -175,19 +177,19 @@ Board::Board(LawnApp* theApp)
 
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN || mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM)
 	{
-		mMenuButton->SetLabel(_S("[MAIN_MENU_BUTTON]"));
+		mMenuButton->mLabel = _S("[MAIN_MENU_BUTTON]");
 		mMenuButton->Resize(628, -10, 163, 46);
 
 		mStoreButton = new GameButton(1);
 		mStoreButton->mButtonImage = IMAGE_ZENSHOPBUTTON;
 		mStoreButton->mOverImage = IMAGE_ZENSHOPBUTTON_HIGHLIGHT;
 		mStoreButton->mDownImage = IMAGE_ZENSHOPBUTTON_HIGHLIGHT;
-		mStoreButton->mParentWidget = this;
 		mStoreButton->Resize(678, 33, IMAGE_ZENSHOPBUTTON->mWidth, 40);
+		mStoreButton->mParentWidget = this;
 	}
 	else
 	{
-		mMenuButton->SetLabel(_S("[MENU_BUTTON]"));
+		mMenuButton->mLabel = _S("[MENU_BUTTON]");
 		mMenuButton->Resize(681, -10, 117, 46);
 		mFastButton->mBtnNoDraw = false;
 	}
@@ -198,17 +200,19 @@ Board::Board(LawnApp* theApp)
 		mStoreButton->mDrawStoneButton = true;
 		mStoreButton->mBtnNoDraw = true;
 		mStoreButton->mDisabled = true;
+		mStoreButton->mParentWidget = this;
 	}
 
 	if (mApp->mGameMode == GameMode::GAMEMODE_UPSELL)
 	{
-		mMenuButton->SetLabel(_S("[MAIN_MENU_BUTTON]"));
+		mMenuButton->mLabel = _S("[MAIN_MENU_BUTTON]");
 		mMenuButton->Resize(628, -10, 163, 46);
 
 		mStoreButton = new GameButton(1);
 		mStoreButton->mDrawStoneButton = true;
 		mStoreButton->mBtnNoDraw = true;
-		mStoreButton->SetLabel(_S("[GET_FULL_VERSION_BUTTON]"));
+		mStoreButton->mLabel = _S("[GET_FULL_VERSION_BUTTON]");
+		mStoreButton->mParentWidget = this;
 	}
 }
 
@@ -1721,8 +1725,8 @@ void Board::UpdateLevelEndSequence()
 	{
 		if (mApp->mPlayedQuickplay && mApp->mQuickLevel != FINAL_LEVEL)
 		{
-			LawnDialog* dialog = (LawnDialog*)mApp->DoDialog(DIALOG_MESSAGE, true, "Continue?", "Would you like to go to the next level in Quick Play?", "", Dialog::BUTTONS_YES_NO);
-			if (dialog->WaitForResult(true) == Dialog::ID_YES)
+			LawnDialog* aDialog = (LawnDialog*)mApp->DoDialog(DIALOG_MESSAGE, true, _S("[QUICK_PLAY_HEADER]"), _S("[QUICK_PLAY]"), "", Dialog::BUTTONS_YES_NO);
+			if (aDialog->WaitForResult(true) == Dialog::ID_YES)
 			{
 				mApp->mQuickLevel++;
 				mApp->StartQuickPlay();
@@ -5592,29 +5596,29 @@ void Board::Update()
 		mFastButton->mDownImage = !mApp->isFastMode ? IMAGE_FASTBUTTON_HIGHLIGHT : IMAGE_FASTBUTTON;
 	}
 
-	SexyString Details;
-	if (mApp->mGameMode != GameMode::GAMEMODE_ADVENTURE)
-		Details = TodStringTranslate(mApp->GetCurrentChallengeDef().mChallengeName);
+	SexyString aDetails;
+	if (!mApp->IsAdventureMode())
+		aDetails = mApp->GetCurrentChallengeDef().mChallengeName;
 	else
-		Details = (mApp->mPlayedQuickplay ? "Quick Play" : "Adventure") + mApp->GetStageString(mLevel);
-	mApp->mDetails = Details;
+		aDetails = TodReplaceString(mApp->mPlayedQuickplay ? _S("[DISCORD_BOARD_QUICK_PLAY]") : _S("[DISCORD_BOARD_ADVENTURE]"), _S("{LEVEL}"), mApp->GetStageString(mLevel).erase(0, 1));
+	mApp->mDetails = aDetails;
 
-	SexyString State;
+	SexyString aState;
 	if (mApp->GetDialog(Dialogs::DIALOG_CONTINUE))
-		State = "Continue?";
-	else if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON || mApp->GetDialog(Dialogs::DIALOG_GAME_OVER))
-		State = "Game Over";
+		aState = _S("[DISCORD_BOARD_CONTINUE_DIALOG]");
+	else if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON)
+		aState = _S("[DISCORD_BOARD_GAME_OVER]");
 	else if (mCutScene->mSeedChoosing)
-		State = "Choosing Plants";
+		aState = _S("[DISCORD_BOARD_CHOOSING_PLANTS]");
 	else if (mApp->mGameScene != GameScenes::SCENE_PLAYING && mCutScene->mCutsceneTime > 0)
-		State = "Cutscene";
+		aState = _S("[DISCORD_BOARD_CUTSCENE]");
 	else if (mBoardFadeOutCounter >= 0)
-		State = "Finishing";
+		aState = _S("[DISCORD_BOARD_FINISHING]");
 	else if (mLevelAwardSpawned)
-		State = "Finished";
+		aState = _S("[DISCORD_BOARD_FINISHED]");
 	else
-		State = "Playing";
-	mApp->UpdateDiscordState(State);
+		aState = _S("[DISCORD_BOARD_PLAYING]");
+	mApp->UpdateDiscordState(aState);
 
 	if(mSunMoney >= 8000 && !mApp->mPlayedQuickplay)
 		mApp->GetAchievement(ACHIEVEMENT_SUNNY_DAYS);
@@ -6655,7 +6659,7 @@ void Board::DrawLevel(Graphics* g)
 	SexyString aLevelStr;
 	if (mApp->IsAdventureMode())
 	{
-		aLevelStr = (mApp->mPlayedQuickplay ? "Quick Play" : TodStringTranslate(_S("[LEVEL]"))) + mApp->GetStageString(mLevel);
+		aLevelStr = TodReplaceString(mApp->mPlayedQuickplay ? _S("[QUICK_PLAY_LEVEL]") : _S("[LEVEL]"), _S("{LEVEL}"), mApp->GetStageString(mLevel).erase(0, 1));
 	}
 	else
 	{

@@ -52,3 +52,6 @@ const int           STORESCREEN_COINBANK_X = 650;
 const int           STORESCREEN_COINBANK_Y = 559;
 const int           STORESCREEN_PAGESTRING_X = 470;
 const int           STORESCREEN_PAGESTRING_Y = 500;
+
+const int			ADVANCED_SPEED_MIN = 2;
+const int			ADVANCED_SPEED_MAX = 9;

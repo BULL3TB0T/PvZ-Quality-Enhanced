@@ -8,12 +8,6 @@
 
 using namespace Sexy;
 
-
-SexyString Sexy::DIALOG_YES_STRING				= _S("YES");
-SexyString Sexy::DIALOG_NO_STRING				= _S("NO");
-SexyString Sexy::DIALOG_OK_STRING				= _S("OK");
-SexyString Sexy::DIALOG_CANCEL_STRING			= _S("CANCEL");
-
 static int gDialogColors[][3] = 
 {{255, 255, 255},
 {255, 255, 0},
@@ -49,13 +43,13 @@ Dialog::Dialog(Image* theComponentImage, Image* theButtonComponentImage, int the
 
 		if (mButtonMode == BUTTONS_YES_NO)
 		{
-			mYesButton->mLabel = gSexyAppBase->GetString(("ID_YES"), DIALOG_YES_STRING);
-			mNoButton->mLabel = gSexyAppBase->GetString(("ID_NO"), DIALOG_NO_STRING);
+			mYesButton->mLabel = _S("[DIALOG_BUTTON_YES]");
+			mNoButton->mLabel = _S("[DIALOG_BUTTON_NO]");
 		}
 		else
 		{
-			mYesButton->mLabel = gSexyAppBase->GetString(("ID_OK"), DIALOG_OK_STRING);
-			mNoButton->mLabel = gSexyAppBase->GetString(("ID_CANCEL"), DIALOG_CANCEL_STRING);
+			mYesButton->mLabel = _S("[DIALOG_BUTTON_OK]");
+			mNoButton->mLabel = _S("[DIALOG_BUTTON_CANCEL]");
 		}
 	}
 	else if (mButtonMode == BUTTONS_FOOTER)

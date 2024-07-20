@@ -2322,7 +2322,7 @@ void ZenGarden::OpenStore()
         aStore->SetupForIntro(2600);
         mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_FERTILIZER] = PURCHASE_COUNT_OFFSET + 5;
     }
-    aStore->mBackButton->SetLabel(_S("[STORE_BACK_TO_GAME]"));
+    aStore->mBackButton->mLabel = _S("[STORE_BACK_TO_GAME]");
     aStore->mPage = StorePages::STORE_PAGE_ZEN1;
     aStore->WaitForResult(true);
 
@@ -2345,7 +2345,7 @@ void ZenGarden::OpenStore()
 
 void ZenGarden::SetupForZenTutorial()
 {
-    mBoard->mMenuButton->SetLabel(_S("[CONTINUE_BUTTON]"));
+    mBoard->mMenuButton->mLabel = _S("[CONTINUE_BUTTON]");
     mBoard->mStoreButton->mDisabled = true;
     mBoard->mStoreButton->mBtnNoDraw = true;
     mBoard->mMenuButton->mDisabled = true;

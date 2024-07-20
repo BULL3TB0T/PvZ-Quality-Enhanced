@@ -7,11 +7,9 @@
 #include "../../SexyAppFramework/EditListener.h"
 
 const int ADVANCED_PAGE_Y = 355;
-const int ADVANCED_MAX_PAGES = 2;
-const int ADVANCED_SPEED_MIN = 2;
-const int ADVANCED_SPEED_MAX = 9;
+const int ADVANCED_MAX_PAGES = 3;
 const int ADVANCED_SPEED_X = 284;
-const int ADVANCED_SPEED_Y = 148;
+const int ADVANCED_SPEED_Y = 128;
 
 class LawnApp;
 class LawnStoneButton;
@@ -35,13 +33,14 @@ protected:
 		NewOptionsDialog_Fullscreen,
 		NewOptionsDialog_HardwareAcceleration,
 		NewOptionsDialog_Advanced,
+		NewOptionsDialog_Language,
 		NewOptionsDialog_LeftPage,
 		NewOptionsDialog_RightPage,
 		NewOptionsDialog_Back
 	};
 
 public:
-	LawnApp*				mApp;								
+	LawnApp* mApp;								
 	Sexy::Slider*			mMusicVolumeSlider;					
 	Sexy::Slider*			mSfxVolumeSlider;					
 	Sexy::Checkbox*			mFullscreenCheckbox;				
@@ -60,13 +59,14 @@ public:
 	NewLawnButton*			mBackToGameButton;					
 	LawnStoneButton*		mAdvancedButton;
 	NewLawnButton*			mGameAdvancedButton;
-	NewLawnButton*			mLeftPageButton;
 	NewLawnButton*			mRightPageButton;
+	NewLawnButton*			mLeftPageButton;
 	bool					mFromGameSelector;					
 	bool					mAdvancedMode;
 	int						mAdvancedPage;
 	EditWidget*				mSpeedEditWidget;
 	SexyString				mSpeedEditPrevText;
+	NewLawnButton*			mLanguageButton;
 
 public:
 	NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector, bool theAdvanced);

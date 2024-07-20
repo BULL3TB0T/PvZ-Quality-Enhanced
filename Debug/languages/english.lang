@@ -1,3 +1,102 @@
+[LANGUAGE_NAME]
+English
+
+[CURRENCY_STRING]
+${AMOUNT}
+
+[DISCORD_STARTING]
+Starting
+
+[DISCORD_CREDITS_SCREEN]
+In the Credits Screen
+
+[DISCORD_WATCHING_CREDITS]
+Watching the Credits
+
+[DISCORD_CREDITS_PAUSED]
+Paused
+
+[DISCORD_CREDITS_PLAYING]
+Playing
+
+[DISCORD_AWARD_SCREEN]
+In the Award Screen
+
+[DISCORD_CREDITS_NOTE]
+Credits Note
+
+[DISCORD_HELP_NOTE]
+Help Note
+
+[DISCORD_ZOMBIE_NOTE]
+Zombie Note ({LEVEL})
+
+[DISCORD_CHALLENGE_SCREEN]
+In the Challenge Screen
+
+[DISCORD_TITLE_SCREEN]
+In the Title Screen
+
+[DISCORD_MAIN_MENU]
+In the Main Menu
+
+[DISCORD_GAME_SELECTOR]
+Game Selector
+
+[DISCORD_ACHIEVEMENTS]
+Achievements
+
+[DISCORD_QUICK_PLAY]
+Quick Play ({LEVEL})
+
+[DISCORD_BOARD_ADVENTURE]
+Adventure {LEVEL}
+
+[DISCORD_BOARD_QUICK_PLAY]
+Quick Play {LEVEL}
+
+[DISCORD_BOARD_PLAYING]
+Playing
+
+[DISCORD_BOARD_FINISHED]
+Finished
+
+[DISCORD_BOARD_FINISHING]
+Finishing
+
+[DISCORD_BOARD_CUTSCENE]
+Cutscene
+
+[DISCORD_BOARD_CHOOSING_PLANTS]
+Choosing Plants
+
+[DISCORD_BOARD_GAME_OVER]
+Game Over
+
+[DISCORD_BOARD_CONTINUE_DIALOG]
+Continue Dialog
+
+[DISCORD_ALMANAC_INDEX]
+Almanac (Index)
+
+[DISCORD_ALMANAC_PLANTS]
+Almanac (Plants)
+
+[DISCORD_ALMANAC_ZOMBIES]
+Almanac (Zombies)
+
+[DISCORD_STORE]
+Store
+
+[DISCORD_OPTIONS]
+Options
+
+[DISCORD_ADVANCED_OPTIONS]
+Advanced Options (Page {PAGE})
+
+[DISCORD_PROFILES]
+Profiles
+
 [PEASHOOTER]
 Peashooter
 
@@ -2002,6 +2101,9 @@ YES
 [DIALOG_BUTTON_NO]
 NO
 
+[DIALOG_BUTTON_BACK]
+BACK
+
 [NEW_PLANT]
 YOU GOT A NEW PLANT!
 
@@ -2184,6 +2286,9 @@ LET'S ROCK!
 [VIEW_LAWN]
 VIEW LAWN
 
+[DEBUG_PLAY_BUTTON]
+(Debug Play)
+
 [ALMANAC_BUTTON]
 ALMANAC
 
@@ -2202,20 +2307,20 @@ View Plants
 [VIEW_ZOMBIES]
 View Zombies
 
-[BACK_TO_MENU]
+[BACK_TO_MENU_BUTTON]
 Back to Menu
 
-[ADVANCED_OPTIONS]
+[ADVANCED_OPTIONS_BUTTON]
 Advanced Options
+
+[ADVANCED_OPTIONS_BUTTON_SHORT]
+A
 
 [ROLL_CREDITS]
 Roll Credits!
 
-[PAGE_X]
-{PAGE}
-
 [RESTART_BUTTON]
-Restart
+RESTART
 
 [NEW_GAME_BUTTON]
 New Game
@@ -2232,6 +2337,178 @@ quit the game?
 
 [QUIT_HEADER]
 Quit
+
+[CONTINUE_GAME_HEADER]
+CONTINUE GAME?
+
+[CONTINUE_GAME]
+Do you want to continue your current game or start a new game?
+
+[CONTINUE_GAME_OR_RESTART]
+Do you want to continue your current game or restart the level?
+
+[LEAVE_GAME]
+Leave Game?
+
+[LEAVE_GAME_HEADER]
+Do you want to return
+to the main menu?
+
+Your game will be saved.
+
+[GAME_PAUSED]
+GAME PAUSED
+
+[GAME_PAUSED_HEADER]
+Click to resume game
+
+[RESUME_GAME]
+Resume Game
+
+[ENTER_YOUR_NAME]
+Enter Your Name
+
+[ENTER_NEW_USER]
+Please enter your name to create a new user profile for storing high score data and game progress
+
+[NAME_CONFLICT]
+Name Conflict
+
+[ENTER_UNIQUE_PLAYER_NAME]
+The name you entered is already being used. Please enter a unique player name
+
+[ARE_YOU_SURE]
+Are You Sure
+
+[DELETE_USER_WARNING]
+This will permanently remove '{NAME}' from the player roster!
+
+[RESTART_LEVEL]
+Are you sure that you want to restart the level?
+
+[NEW_GAME_HEADER]
+New Game?
+
+[NEW_GAME]
+Are you sure that you want to start a new game?
+
+[RENAME_USER]
+RENAME USER
+
+[NEW_USER]
+NEW USER
+
+[PLEASE_ENTER_NAME]
+Please enter your name:
+
+[WHO_ARE_YOU]
+WHO ARE YOU?
+
+[RENAME_BUTTON]
+Rename
+
+[DELETE_BUTTON]
+Delete
+
+[CREATE_NEW_USER]
+(Create a New User)
+
+[NOT_ENOUGH_MONEY]
+Not enough money
+
+[CANNOT_AFFORD_ITEM]
+You can't afford this item yet. Earn more coins by killing zombies!
+
+[BUY_THIS_ITEM_HEADER]
+Buy this item?
+
+[BUY_THIS_ITEM]
+Are you sure you want to buy this item?
+
+[CHOOSE_SEEDS_PER_LEVEL]
+Now you can choose to take {AMOUNT} seeds with you per level!
+
+[MORE_SLOTS]
+More slots!
+
+[QUICK_PLAY_HEADER]
+Continue Quick Play?
+
+[QUICK_PLAY]
+Would you like to go to the next level in Quick Play?
+
+[PLAY_BUTTON]
+PLAY
+
+[CRAZY_DAVE_SEEDS]
+Crazy Dave Seeds
+
+[OPTIONS_PAGE]
+Page {PAGE}
+
+[OPTIONS_MUSIC]
+Music
+
+[OPTIONS_SOUND]
+Sound FX
+
+[OPTIONS_ACCELERATION]
+3D Acceleration
+
+[OPTIONS_FULLSCREEN]
+Full Screen
+
+[OPTIONS_DEBUG_MODE]
+Debug Mode
+
+[OPTIONS_DISCORD_PRESENCE]
+Discord Presence
+
+[OPTIONS_SEED_BANK_KEYBINDS]
+Seed Bank Keybinds
+
+[OPTIONS_SEED_BANK_KEYBIND]
+Keybind: '{KEYBIND}'
+
+[OPTIONS_SHOVEL_KEYBIND]
+Shovel Keybind: 'S'
+
+[OPTIONS_SPEED_MULTIPLIER]
+Speed Multiplier
+
+[OPTIONS_AUTO_COLLECT_SUNS]
+Auto-Collect Suns
+
+[OPTIONS_AUTO_COLLECT_COINS]
+Auto-Collect Coins
+
+[OPTIONS_ZOMBIE_HEALTHBARS]
+Zombie Healthbars
+
+[OPTIONS_PLANT_HEALTHBARS]
+Plant Healthbars
+
+[OPTIONS_LANGUAGE]
+Language:
+
+[NO_WINDOWED_MODE_HEADER]
+No Windowed Mode
+
+[NO_WINDOWED_MODE]
+Windowed mode is only available if your desktop was running in either
+16 bit or 32 bit color mode when you started the game.
+
+
+If you'd like to run in Windowed mode then you need to quit the game and switch your desktop to 16 or 32 bit color mode.
+
+[NOT_RECOMMENDED_ACCELERATION_HEADER]
+Warning
+
+[NOT_RECOMMENDED_ACCELERATION]
+Your video card may not fully support this feature.
+
+
+If you experience slower performance, please disable Hardware Acceleration.
 
 [AWW_YEAH_BUTTON]
 AWW YEAH!
@@ -2270,7 +2547,7 @@ Are you sure you want to play this level without lily pads?
 Are you sure you want to play this level without wall-nuts?
 
 [SEED_CHOOSER_ART_2_WARNING]
-Are you sure you want to play this level without starfruit, umbrella leaf, and wall-nut seeds??
+Are you sure you want to play this level without starfruit, umbrella leaf, and wall-nut seeds?
 
 [SEED_CHOOSER_FLYER_WARNING]
 You haven't chosen any plants that fight off balloon zombies, are you sure you want to continue?
@@ -2341,7 +2618,10 @@ You made it to a streak of {STREAK}
 Streak: {STREAK}
  
 [LEVEL]
-Level
+Level {LEVEL}
+
+[QUICK_PLAY_LEVEL]
+Quick Play {LEVEL}
 
 [GAME_OVER]
 GAME OVER
@@ -2351,6 +2631,24 @@ Survival
 
 [PICK_CHALLENGE]
 Mini-Games
+
+[PAGE_SELECTION_BUTTON]
+Page Selection
+
+[PAGE_SELECTION_HEADER]
+Page Selection
+
+[CLOSE_PAGE_SELECTION]
+Close Page Selection
+
+[TROPHY_NONE]
+None
+
+[LIMBO_PAGE]
+Limbo Page
+
+[UNKNOWN_PAGE]
+Unknown Page
 
 [ONE_MORE_CHALLENGE_TOOLTIP]
 Complete 1 more mini-game to unlock
@@ -2617,13 +2915,16 @@ CLICK TO START!
 [LOADING]
 LOADING...
 
+[USER_LOADING]
+Loading...
+
 [CREDITS]
 Credits
 
 [BACK_TO_GAME]
 Back To Game
 
-[RESTART_LEVEL]
+[RESTART_LEVEL_BUTTON]
 Restart Level
 
 [ADVICE_ZEN_GARDEN_PICK_UP_WATER]
@@ -2812,6 +3113,12 @@ All your brainz r belong to us
 
 [I_ZOMBIE_ENDLESS]
 I, Zombie Endless
+
+[UPSELL]
+Upsell
+
+[INTRO]
+Intro
 
 [UNLOCKED_I_ZOMBIE_LEVEL]
 You've unlocked a new
@@ -3204,7 +3511,7 @@ CREDITS PAUSED
 Click to resume the credits. 
 
 You can also view the credits later 
-on the main menu.
+from the options on the main menu.
 
 [CREDITS_RESUME_BUTTON]
 Resume Credits

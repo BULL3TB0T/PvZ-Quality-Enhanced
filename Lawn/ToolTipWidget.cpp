@@ -27,30 +27,31 @@ void ToolTipWidget::GetLines(std::vector<SexyString>& theLines)
 	unsigned int aIndexStart = 0;
 	unsigned int aIndexInLine = 0;
 
-	while (aIndexInLine != mLabel.size())
+	SexyString aLabel = TodStringTranslate(mLabel);
+	while (aIndexInLine != aLabel.size())
 	{
-		while (aIndexInLine < mLabel.size() && mLabel[aIndexInLine] != ' ' && mLabel[aIndexInLine] != '\n')
+		while (aIndexInLine < aLabel.size() && aLabel[aIndexInLine] != ' ' && aLabel[aIndexInLine] != '\n')
 		{
-			aLineWidth += FONT_BRIANNETOD12->CharWidth(mLabel[aIndexInLine]);
+			aLineWidth += FONT_BRIANNETOD12->CharWidth(aLabel[aIndexInLine]);
 			aIndexInLine++;
 		}
 
-		if (aIndexInLine != mLabel.size() && aLineWidth < mGetsLinesWidth && mLabel[aIndexInLine] != '\n')
+		if (aIndexInLine != aLabel.size() && aLineWidth < mGetsLinesWidth && aLabel[aIndexInLine] != '\n')
 		{
-			aLineWidth += FONT_BRIANNETOD12->CharWidth(mLabel[aIndexInLine]);
+			aLineWidth += FONT_BRIANNETOD12->CharWidth(aLabel[aIndexInLine]);
 			aIndexInLine++;
 		}
 		else
 		{
-			SexyString aLine = mLabel.substr(aIndexStart, aIndexInLine - aIndexStart);
+			SexyString aLine = aLabel.substr(aIndexStart, aIndexInLine - aIndexStart);
 			aLineWidth = 0;
 			theLines.push_back(aLine);
 
-			if (aIndexInLine < mLabel.size() && mLabel[aIndexInLine] == '\n')
+			if (aIndexInLine < aLabel.size() && aLabel[aIndexInLine] == '\n')
 			{
 				aIndexInLine++;
 			}
-			while (aIndexInLine < mLabel.size() && mLabel[aIndexInLine] == ' ')
+			while (aIndexInLine < aLabel.size() && aLabel[aIndexInLine] == ' ')
 			{
 				aIndexInLine++;
 			}
@@ -64,8 +65,10 @@ void ToolTipWidget::CalculateSize()
 {
 	std::vector<SexyString> aLines;
 
-	int aTitleWidth = FONT_BRIANNETOD12->StringWidth(mTitle);
-	int aWarningWidth = FONT_BRIANNETOD12->StringWidth(mWarningText);
+	SexyString aTitle = TodStringTranslate(mTitle);
+	SexyString aWarningText = TodStringTranslate(mWarningText);
+	int aTitleWidth = FONT_BRIANNETOD12->StringWidth(aTitle);
+	int aWarningWidth = FONT_BRIANNETOD12->StringWidth(aWarningText);
 	int aMaxWidth = max(aTitleWidth, aWarningWidth);
 
 	mGetsLinesWidth = max(aMaxWidth - 30, 100);
@@ -78,11 +81,11 @@ void ToolTipWidget::CalculateSize()
 	}
 
 	int aHeight = 6;
-	if (!mTitle.empty())
+	if (!aTitle.empty())
 	{
 		aHeight = FONT_BRIANNETOD12->GetAscent() + 8;
 	}
-	if (!mWarningText.empty())
+	if (!aWarningText.empty())
 	{
 		aHeight += FONT_BRIANNETOD12->GetAscent() + 2;
 	}
@@ -94,19 +97,19 @@ void ToolTipWidget::CalculateSize()
 
 void ToolTipWidget::SetLabel(const SexyString& theLabel)
 {
-	mLabel = TodStringTranslate(theLabel);
+	mLabel = theLabel;
 	CalculateSize();
 }
 
 void ToolTipWidget::SetTitle(const SexyString& theTitle)
 {
-	mTitle = TodStringTranslate(theTitle);
+	mTitle = theTitle;
 	CalculateSize();
 }
 
 void ToolTipWidget::SetWarningText(const SexyString& theWarningText)
 {
-	mWarningText = TodStringTranslate(theWarningText);
+	mWarningText = theWarningText;
 	CalculateSize();
 }
 
@@ -145,17 +148,20 @@ void ToolTipWidget::Draw(Graphics* g)
 	g->DrawRect(aPosX, aPosY, mWidth - 1, mHeight - 1);
 	aPosY++;
 
-	if (!mTitle.empty())
+
+	SexyString aTitle = TodStringTranslate(mTitle);
+	if (!aTitle.empty())
 	{
 		g->SetFont(FONT_BRIANNETOD12);
-		g->DrawString(mTitle, aPosX + (mWidth - FONT_BRIANNETOD12->StringWidth(mTitle)) / 2, aPosY + FONT_BRIANNETOD12->GetAscent());
+		g->DrawString(aTitle, aPosX + (mWidth - FONT_BRIANNETOD12->StringWidth(aTitle)) / 2, aPosY + FONT_BRIANNETOD12->GetAscent());
 		aPosY += FONT_BRIANNETOD12->GetAscent() + 2;
 	}
 
-	if (!mWarningText.empty())
+	SexyString aWarningText = TodStringTranslate(mWarningText);
+	if (!aWarningText.empty())
 	{
 		g->SetFont(FONT_BRIANNETOD12);
-		int x = aPosX + (mWidth - FONT_BRIANNETOD12->StringWidth(mWarningText)) / 2;
+		int x = aPosX + (mWidth - FONT_BRIANNETOD12->StringWidth(aWarningText)) / 2;
 		int y = aPosY + FONT_BRIANNETOD12->GetAscent();
 
 		Color aWarningColor(255, 0, 0);
@@ -165,7 +171,7 @@ void ToolTipWidget::Draw(Graphics* g)
 		}
 
 		g->SetColor(aWarningColor);
-		g->DrawString(mWarningText, x, y);
+		g->DrawString(aWarningText, x, y);
 		g->SetColor(Color::Black);
 
 		aPosY += FONT_BRIANNETOD12->GetAscent() + 2;

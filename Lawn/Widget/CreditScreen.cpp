@@ -344,7 +344,7 @@ CreditScreen::CreditScreen(LawnApp* theApp)
 		mApp->SetMusicVolume(0.85);
 	}
 
-    mApp->mDetails = "Watching the Credits";
+    mApp->mDetails = _S("[DISCORD_WATCHING_CREDITS]");
 }
 
 CreditScreen::~CreditScreen()
@@ -1036,7 +1036,7 @@ void CreditScreen::Update()
 {
     Widget::Update();
 
-    mApp->UpdateDiscordState(mCreditsPaused ? "Paused" : "Playing");
+    mApp->UpdateDiscordState(mCreditsPaused ? _S("[DISCORD_CREDITS_PAUSED]") : _S("[DISCORD_CREDITS_PLAYING]"));
 
     if (!mCreditsPaused && !mMainMenuButton->mIsOver && !mReplayButton->mIsOver)
     {

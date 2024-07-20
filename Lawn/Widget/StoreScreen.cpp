@@ -45,7 +45,7 @@ void StoreScreenOverlay::Draw(Graphics* g)
     mParent->DrawOverlay(g);
 }
 
-StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STORE, true, _S("Store"), _S(""), _S(""), BUTTONS_NONE)
+StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STORE, true, _S(""), _S(""), _S(""), BUTTONS_NONE)
 {
 	mApp = theApp;
     mClip = false;
@@ -72,7 +72,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 
     mBackButton = new NewLawnButton(nullptr, StoreScreen::StoreScreen_Back, this);
     mBackButton->mDoFinger = true;
-    mBackButton->SetLabel(_S("[STORE_MAIN_MENU_BUTTON]"));
+    mBackButton->mLabel = _S("[STORE_MAIN_MENU_BUTTON]");
     Image* aMenuImage = Sexy::IMAGE_STORE_MAINMENUBUTTON;
     mBackButton->mButtonImage = aMenuImage;
     mBackButton->mOverImage = Sexy::IMAGE_STORE_MAINMENUBUTTONHIGHLIGHT;
@@ -88,7 +88,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 
     mPrevButton = new NewLawnButton(nullptr, StoreScreen::StoreScreen_Prev, this);
     mPrevButton->mDoFinger = true;
-    mPrevButton->SetLabel(_S(""));
+    mPrevButton->mLabel = _S("");
     Image* aPrevImage = Sexy::IMAGE_STORE_PREVBUTTON;
     mPrevButton->mButtonImage = aPrevImage;
     mPrevButton->mOverImage = Sexy::IMAGE_STORE_PREVBUTTONHIGHLIGHT;
@@ -99,7 +99,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
 
     mNextButton = new NewLawnButton(nullptr, StoreScreen::StoreScreen_Next, this);
     mNextButton->mDoFinger = true;
-    mNextButton->SetLabel(_S(""));
+    mNextButton->mLabel = _S("");
     Image* aNextImage = Sexy::IMAGE_STORE_NEXTBUTTON;
     mNextButton->mButtonImage = aNextImage;
     mNextButton->mOverImage = Sexy::IMAGE_STORE_NEXTBUTTONHIGHLIGHT;
@@ -902,7 +902,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
     mApp->CrazyDaveStopTalking();
     if (!CanAffordItem(theStoreItem))
     {
-        Dialog* aDialog = mApp->DoDialog(DIALOG_NOT_ENOUGH_MONEY, true, _S("Not enough money"/*[NOT_ENOUGH_MONEY]*/), _S("You can't afford this item yet. Earn more coins by killing zombies!"/*[CANNOT_AFFORD_ITEM]*/), _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER);
+        Dialog* aDialog = mApp->DoDialog(DIALOG_NOT_ENOUGH_MONEY, true, _S("[NOT_ENOUGH_MONEY]"), _S("[CANNOT_AFFORD_ITEM]"), _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER);
         mWaitForDialog = true;
         aDialog->WaitForResult(true);
         mWaitForDialog = false;
@@ -912,13 +912,13 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
         LawnDialog* aComfirmDialog = (LawnDialog*)mApp->DoDialog(
             DIALOG_STORE_PURCHASE, 
             true, 
-            _S("Buy this item?"), 
-            _S("Are you sure you want to buy this item?"), 
+            _S("[BUY_THIS_ITEM_HEADER]"),
+            _S("[BUY_THIS_ITEM]"),
             _S(""), 
             BUTTONS_YES_NO
         );
-        aComfirmDialog->mLawnYesButton->SetLabel(_S("[DIALOG_BUTTON_YES]"));
-        aComfirmDialog->mLawnNoButton->SetLabel(_S("[DIALOG_BUTTON_NO]"));
+        aComfirmDialog->mLawnYesButton->mLabel = _S("[DIALOG_BUTTON_YES]");
+        aComfirmDialog->mLawnNoButton->mLabel = _S("[DIALOG_BUTTON_NO]");
 
         mWaitForDialog = true;
         int aComfirmResult = aComfirmDialog->WaitForResult(true);
@@ -930,8 +930,8 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
             if (theStoreItem == STORE_ITEM_PACKET_UPGRADE)
             {
                 ++mApp->mPlayerInfo->mPurchases[theStoreItem];
-                SexyString aDialogLines = StrFormat(_S("Now you can choose to take %d seeds with you per level!"), 6 + mApp->mPlayerInfo->mPurchases[theStoreItem]);
-                Dialog* aDialog = mApp->DoDialog(DIALOG_UPGRADED, true, _S("More slots!"/*[MORE_SLOTS]*/), aDialogLines, _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER);
+                Dialog* aDialog = mApp->DoDialog(DIALOG_UPGRADED, true, _S("[MORE_SLOTS]"),
+                    TodReplaceNumberString(_S("[CHOOSE_SEEDS_PER_LEVEL]"), _S("{AMOUNT}"), 6 + mApp->mPlayerInfo->mPurchases[theStoreItem]), _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER);
 
                 mWaitForDialog = true;
                 aDialog->WaitForResult(true);
@@ -983,8 +983,8 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem)
                     _S(""), 
                     BUTTONS_YES_NO
                 );
-                aDialog->mLawnYesButton->SetLabel(_S("[DIALOG_BUTTON_YES]"));
-                aDialog->mLawnNoButton->SetLabel(_S("[DIALOG_BUTTON_NO]"));
+                aDialog->mLawnYesButton->mLabel = _S("[DIALOG_BUTTON_YES]");
+                aDialog->mLawnNoButton->mLabel = _S("[DIALOG_BUTTON_NO]");
 
                 mWaitForDialog = true;
                 int aResult = aDialog->WaitForResult(true);

@@ -22,8 +22,8 @@ LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const SexyStrin
     mDrawStandardBack = true;
     mTallBottom = false;
     mVerticalCenterText = true;
-    mDialogHeader = TodStringTranslate(theDialogHeader);
-    mDialogLines = TodStringTranslate(theDialogLines);
+    mDialogHeader = theDialogHeader;
+    mDialogLines = theDialogLines;
     SetColor(0, { 0xE0,0xBB,0x62 });
     SetColor(1, { 0xE0,0xBB,0x62 });
     SetHeaderFont(Sexy::FONT_DWARVENTODCRAFT24);
@@ -32,13 +32,13 @@ LawnDialog::LawnDialog(LawnApp* theApp, int theId, bool isModal, const SexyStrin
 
     if (theButtonMode == 1)
     {
-        mLawnYesButton = MakeButton(1000, this, _S("Yes"/*[BUTTON_YES]*/));
-        mLawnNoButton = MakeButton(1001, this, _S("No"/*[BUTTON_NO]*/));
+        mLawnYesButton = MakeButton(1000, this, _S("[DIALOG_BUTTON_YES]"));
+        mLawnNoButton = MakeButton(1001, this, _S("[DIALOG_BUTTON_NO]"));
     }
     else if (theButtonMode == 2)
     {
-        mLawnYesButton = MakeButton(1000, this, _S("Ok"/*[BUTTON_OK]*/));
-        mLawnNoButton = MakeButton(1001, this, _S("Cancel"/*[BUTTON_CANCEL]*/));
+        mLawnYesButton = MakeButton(1000, this, _S("[DIALOG_BUTTON_OK]"));
+        mLawnNoButton = MakeButton(1001, this, _S("[DIALOG_BUTTON_CANCEL]"));
     }
     else if (theButtonMode == 3)
     {
@@ -79,8 +79,10 @@ int LawnDialog::GetTop()
 
 void LawnDialog::CalcSize(int theExtraX, int theExtraY)
 {
+    SexyString aDialogHeader = TodStringTranslate(mDialogHeader);
+    SexyString aDialogLines = TodStringTranslate(mDialogLines);
     int aWidth = mBackgroundInsets.mLeft + mBackgroundInsets.mRight + mContentInsets.mLeft + mContentInsets.mRight + theExtraX;
-    if (mDialogHeader.size() > 0) aWidth += mHeaderFont->StringWidth(mDialogHeader);
+    if (aDialogHeader.size() > 0) aWidth += mHeaderFont->StringWidth(aDialogHeader);
     int aTopMidWidth = Sexy::IMAGE_DIALOG_TOPMIDDLE->mWidth;
     int aImageWidth = Sexy::IMAGE_DIALOG_TOPLEFT->mWidth + Sexy::IMAGE_DIALOG_TOPRIGHT->mWidth + aTopMidWidth;
     if (aWidth <= aImageWidth)
@@ -97,17 +99,17 @@ void LawnDialog::CalcSize(int theExtraX, int theExtraY)
     }
 
     int aHeight = mBackgroundInsets.mTop + mBackgroundInsets.mBottom + mContentInsets.mTop + mContentInsets.mBottom + theExtraY + DIALOG_HEADER_OFFSET;
-    if (mDialogHeader.size() > 0)
+    if (aDialogHeader.size() > 0)
     {
         aHeight += -mHeaderFont->GetAscentPadding() + mHeaderFont->GetHeight() + mSpaceAfterHeader;
     }
-    if (mDialogLines.size() > 0)
+    if (aDialogLines.size() > 0)
     {
         aWidth += aTopMidWidth;
         Graphics g;
         g.SetFont(mLinesFont);
         int aBasicWidth = aWidth - mBackgroundInsets.mLeft - mBackgroundInsets.mRight - mContentInsets.mLeft - mContentInsets.mRight - 4;
-        aHeight += GetWordWrappedHeight(&g, aBasicWidth, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset) + 30;
+        aHeight += GetWordWrappedHeight(&g, aBasicWidth, aDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset) + 30;
     }
     aHeight += mButtonHeight;
     int aBottomHeight = (mTallBottom ? Sexy::IMAGE_DIALOG_BIGBOTTOMLEFT : Sexy::IMAGE_DIALOG_BOTTOMLEFT)->mHeight;
@@ -322,13 +324,15 @@ void LawnDialog::Draw(Graphics* g)
     g->DrawImage(aBottomRightImage, aPosX, aPosY);
     g->DrawImage(IMAGE_DIALOG_HEADER, (mWidth - IMAGE_DIALOG_HEADER->mWidth) / 2 - 5, 0);
 
+    SexyString aDialogHeader = TodStringTranslate(mDialogHeader);
+    SexyString aDialogLines = TodStringTranslate(mDialogLines);
     int aFontY = mContentInsets.mTop + mBackgroundInsets.mTop + DIALOG_HEADER_OFFSET;
-    if (mDialogHeader.size() > 0)
+    if (aDialogHeader.size() > 0)
     {
         int aOffsetY = aFontY - mHeaderFont->GetAscentPadding() + mHeaderFont->GetAscent();
         g->SetFont(mHeaderFont);
         g->SetColor(mColors[Dialog::COLOR_HEADER]);
-        WriteCenteredLine(g, aOffsetY, mDialogHeader);
+        WriteCenteredLine(g, aOffsetY, aDialogHeader);
         aFontY = aOffsetY - mHeaderFont->GetAscent() + mHeaderFont->GetHeight() + mSpaceAfterHeader;
     }
 
@@ -338,7 +342,7 @@ void LawnDialog::Draw(Graphics* g)
     Rect aRect(mBackgroundInsets.mLeft + mContentInsets.mLeft + 2, aFontY, aLinesAreaWidth, 0);
     if (mVerticalCenterText)
     {
-        int aLinesHeight = GetWordWrappedHeight(g, aLinesAreaWidth, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset);
+        int aLinesHeight = GetWordWrappedHeight(g, aLinesAreaWidth, aDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset);
         int aLinesAreaHeight = mHeight - mContentInsets.mBottom - mBackgroundInsets.mBottom - mButtonHeight - aFontY - 55;
         if (mTallBottom)
         {
@@ -346,7 +350,7 @@ void LawnDialog::Draw(Graphics* g)
         }
         aRect.mY += (aLinesAreaHeight - aLinesHeight) / 2;
     }
-    WriteWordWrapped(g, aRect, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset, mTextAlign);
+    WriteWordWrapped(g, aRect, aDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset, mTextAlign);
 }
 
 ReanimationWidget::ReanimationWidget()
@@ -415,10 +419,10 @@ GameOverDialog::GameOverDialog(const SexyString& theMessage, bool theShowChallen
     Dialog::BUTTONS_FOOTER)
 {
     mMenuButton = nullptr;
-    mLawnYesButton->SetLabel(_S("[TRY_AGAIN]"));
+    mLawnYesButton->mLabel = _S("[TRY_AGAIN]");
     if (theShowChallengeName)
     {
-        mDialogHeader = TodStringTranslate(mApp->GetCurrentChallengeDef().mChallengeName);
+        mDialogHeader = mApp->GetCurrentChallengeDef().mChallengeName;
     }
 
     if (theMessage.size() == 0)

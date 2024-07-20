@@ -22,7 +22,7 @@
 #include "../../SexyAppFramework/Slider.h"
 
 const Rect cSeedClipRect = Rect(0, 123, BOARD_WIDTH, 420);
-const int seedPacketRows = 8;
+const int cSeedPacketRows = 8;
 
 SeedChooserScreen::SeedChooserScreen()
 {
@@ -41,7 +41,7 @@ SeedChooserScreen::SeedChooserScreen()
 	mScrollPosition = 0;
 
 	mStartButton = new GameButton(SeedChooserScreen::SeedChooserScreen_Start);
-	mStartButton->SetLabel(_S("[LETS_ROCK_BUTTON]"));
+	mStartButton->mLabel = _S("[LETS_ROCK_BUTTON]");
 	mStartButton->mButtonImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON;
 	mStartButton->mOverImage = nullptr;
 	mStartButton->mDownImage = nullptr;
@@ -56,13 +56,13 @@ SeedChooserScreen::SeedChooserScreen()
 	EnableStartButton(false);
 
 	mMenuButton = new GameButton(SeedChooserScreen::SeedChooserScreen_Menu);
-	mMenuButton->SetLabel(_S("[MENU_BUTTON]"));
+	mMenuButton->mLabel = _S("[MENU_BUTTON]");
 	mMenuButton->Resize(681, -10, 117, 46);
 	mMenuButton->mDrawStoneButton = true;
 	mMenuButton->mParentWidget = this;
 
 	mRandomButton = new GameButton(SeedChooserScreen::SeedChooserScreen_Random);
-	mRandomButton->SetLabel(_S("(Debug Play)"));
+	mRandomButton->mLabel = _S("[DEBUG_PLAY_BUTTON]");
 	mRandomButton->mButtonImage = Sexy::IMAGE_BLANK;
 	mRandomButton->mOverImage = Sexy::IMAGE_BLANK;
 	mRandomButton->mDownImage = Sexy::IMAGE_BLANK;
@@ -79,7 +79,7 @@ SeedChooserScreen::SeedChooserScreen()
 	int aImageHeight = aOverImage->GetHeight();
 
 	mViewLawnButton = new GameButton(SeedChooserScreen::SeedChooserScreen_ViewLawn);
-	mViewLawnButton->SetLabel(_S("[VIEW_LAWN]"));
+	mViewLawnButton->mLabel = _S("[VIEW_LAWN]");
 	mViewLawnButton->mButtonImage = aBtnImage;
 	mViewLawnButton->mOverImage = aOverImage;
 	mViewLawnButton->mDownImage = nullptr;
@@ -96,7 +96,7 @@ SeedChooserScreen::SeedChooserScreen()
 	}
 
 	mAlmanacButton = new GameButton(SeedChooserScreen::SeedChooserScreen_Almanac);
-	mAlmanacButton->SetLabel(_S("[ALMANAC_BUTTON]"));
+	mAlmanacButton->mLabel = _S("[ALMANAC_BUTTON]");
 	mAlmanacButton->mButtonImage = aBtnImage;
 	mAlmanacButton->mOverImage = aOverImage;
 	mAlmanacButton->mDownImage = nullptr;
@@ -108,7 +108,7 @@ SeedChooserScreen::SeedChooserScreen()
 	mAlmanacButton->mTextOffsetY = 1;
 
 	mStoreButton = new GameButton(SeedChooserScreen::SeedChooserScreen_Store);
-	mStoreButton->SetLabel(_S("[SHOP_BUTTON]"));
+	mStoreButton->mLabel = _S("[SHOP_BUTTON]");
 	mStoreButton->mButtonImage = aBtnImage;
 	mStoreButton->mOverImage = aOverImage;
 	mStoreButton->mDownImage = nullptr;
@@ -271,8 +271,8 @@ void SeedChooserScreen::GetSeedPositionInChooser(int theIndex, int& x, int& y)
 	}
 	else
 	{
-		x = theIndex % seedPacketRows * 53 + 22;
-		y = theIndex / seedPacketRows * SEED_PACKET_HEIGHT + (SEED_PACKET_HEIGHT + 53) - mScrollPosition;
+		x = theIndex % cSeedPacketRows * 53 + 22;
+		y = theIndex / cSeedPacketRows * SEED_PACKET_HEIGHT + (SEED_PACKET_HEIGHT + 53) - mScrollPosition;
 	}
 }
 
@@ -540,7 +540,7 @@ void SeedChooserScreen::Update()
 	mRandomButton->mBtnNoDraw = !mApp->mTodCheatKeys;
 	mRandomButton->mDisabled = !mApp->mTodCheatKeys;
 
-	mMaxScrollPosition = SEED_PACKET_HEIGHT * ((cSeedClipRect.mHeight % SEED_PACKET_HEIGHT == 0 ? 1 : 0) - (cSeedClipRect.mHeight / SEED_PACKET_HEIGHT) + ((NUM_SEEDS_IN_CHOOSER - 2) / seedPacketRows));
+	mMaxScrollPosition = SEED_PACKET_HEIGHT * ((cSeedClipRect.mHeight % SEED_PACKET_HEIGHT == 0 ? 1 : 0) - (cSeedClipRect.mHeight / SEED_PACKET_HEIGHT) + ((NUM_SEEDS_IN_CHOOSER - 2) / cSeedPacketRows));
 	mSlider->mVisible = mMaxScrollPosition != 0;
 	if (mSlider->mVisible)
 	{
@@ -784,7 +784,7 @@ void SeedChooserScreen::ButtonDepress(int theId)
 	else if (theId == SeedChooserScreen::SeedChooserScreen_Store)
 	{
 		StoreScreen* aStore = mApp->ShowStoreScreen();
-		aStore->mBackButton->SetLabel("[STORE_BACK_TO_GAME]");
+		aStore->mBackButton->mLabel = _S("[STORE_BACK_TO_GAME]");
 		aStore->WaitForResult();
 		if (aStore->mGoToTreeNow)
 		{

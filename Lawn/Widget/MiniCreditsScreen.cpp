@@ -18,7 +18,7 @@ MiniCreditsScreen::MiniCreditsScreen(LawnApp* theApp)
 	TodLoadResources("DelayLoad_ChallengeScreen");
 	TodLoadResources("DelayLoad_Credits");
 
-	mBackButton = MakeNewButton(0, this, _S("[BACK_TO_MENU]"), nullptr, Sexy::IMAGE_SEEDCHOOSER_BUTTON2,
+	mBackButton = MakeNewButton(0, this, _S("[BACK_TO_MENU_BUTTON]"), nullptr, Sexy::IMAGE_SEEDCHOOSER_BUTTON2,
 		Sexy::IMAGE_SEEDCHOOSER_BUTTON2_GLOW, Sexy::IMAGE_SEEDCHOOSER_BUTTON2_GLOW);
 	mBackButton->mTextDownOffsetX = 1;
 	mBackButton->mTextDownOffsetY = 1;
@@ -36,7 +36,7 @@ MiniCreditsScreen::MiniCreditsScreen(LawnApp* theApp)
 	mMusicButton->mTextOffsetY = -2;
 	mMusicButton->mButtonOffsetY = 8;
 
-	mApp->mDetails = "In the Credits Screen";
+	mApp->mDetails = _S("[DISCORD_CREDITS_SCREEN]");
 }
 MiniCreditsScreen::~MiniCreditsScreen()
 {

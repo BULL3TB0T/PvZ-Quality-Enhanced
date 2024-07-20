@@ -50,8 +50,6 @@ SexyApp::SexyApp()
 	mBetaSupport = NULL;
 	mBetaValidate = false;	
 
-	SetString("UPDATE_CHECK_BODY", L"Contacting PopCap.com to determine if there are any updates available for this product ...");
-
 	char aStr[9] = {0};
 	strncpy(aStr, BUILD_INFO_MARKER, 8);
 	mBuildNum = atoi(aStr);
@@ -223,8 +221,6 @@ void SexyApp::ReadFromRegistry()
 
 	mIsRegistered |= Validate(mRegUserName, mRegCode);	
 
-	// Override registry values with partner.xml values
-	mRegisterLink = GetString("RegisterLink", mRegisterLink);
 	mDontUpdate = GetBoolean("DontUpdate", mDontUpdate);
 }
 
@@ -582,13 +578,12 @@ void SexyApp::InitPropertiesHook()
 		mBuildUnlocked = true;
 	}
 
-	mProdName = GetString("ProdName", mProdName);
 	mIsWindowed = GetBoolean("DefaultWindowed", mIsWindowed);	
 
 	std::string aNewTitle = GetString("Title", "");
 	if (aNewTitle.length() > 0)
-		mTitle = aNewTitle + " " + mProductVersion;	
-		
+		mTitle = aNewTitle + " " + mProductVersion;
+
 	//mInternetManager->Init();
 	mBetaSupport = nullptr;//new BetaSupport(this);
 

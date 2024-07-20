@@ -38,7 +38,8 @@
 #include "../PakLib/PakInterface.h"
 #include <string>
 #include <shlobj.h>
-#include <../../GameConstants.h>
+#include "../GameConstants.h"
+#include "../Sexy.TodLib/TodStringFile.h"
 
 #include "memmgr.h"
 
@@ -298,9 +299,13 @@ SexyAppBase::SexyAppBase()
 	mPlantHealthbars = false;
 	mIs3dAccel = true;
 	mCrazySeeds = false;
+	mLanguage = "";
+	mLanguageIndex = -1;
+
+	mProdName = "PlantsVsZombies";
+	mRegKey = "PopCap\\PlantsVsZombies";
 
 	int i;
-
 	for (i = 0; i < NUM_CURSORS; i++)
 		mCursorImages[i] = NULL;	
 
@@ -310,19 +315,6 @@ SexyAppBase::SexyAppBase()
 	for (i = 256; i < 512; i++)
 		mAdd8BitMaxTable[i] = 255;
 	
-	// Set default strings.  Init could read in overrides from partner.xml
-	SetString("DIALOG_BUTTON_OK",		L"OK");
-	SetString("DIALOG_BUTTON_CANCEL",	L"CANCEL");
-
-	SetString("UPDATE_CHECK_TITLE",		L"Update Check");
-	SetString("UPDATE_CHECK_BODY",		L"Checking if there are any updates available for this product ...");
-
-	SetString("UP_TO_DATE_TITLE",		L"Up to Date");	
-	SetString("UP_TO_DATE_BODY",		L"There are no updates available for this product at this time.");
-	SetString("NEW_VERSION_TITLE",		L"New Version");
-	SetString("NEW_VERSION_BODY",		L"There is an update available for this product.  Would you like to visit the web site to download it?");
-	
-
 	mDemoPrefix = "sexyapp";
 	mDemoFileName = mDemoPrefix + ".dmo";
 	mPlayingDemoBuffer = false;
@@ -1588,6 +1580,7 @@ void SexyAppBase::WriteToRegistry()
 	RegistryWriteBoolean("Enhanced_ZombieHealthbars", mZombieHealthbars);
 	RegistryWriteBoolean("Enhanced_PlantHealthbars", mPlantHealthbars);
 	RegistryWriteBoolean("Enhanced_CrazyDaveSeeds", mCrazySeeds);
+	RegistryWriteString("Enhanced_Language", mLanguage);
 	RegistryWriteBoolean("3DAcceleration", mIs3dAccel);
 	RegistryWriteInteger("MouseSensitivity", (int) (mMouseSensitivity * 100));
 }
@@ -1931,6 +1924,7 @@ void SexyAppBase::ReadFromRegistry()
 	RegistryReadInteger("PreferredX", &mPreferredX);
 	RegistryReadInteger("PreferredY", &mPreferredY);
 	RegistryReadInteger("Enhanced_SpeedModifier", &mSpeedModifier);
+	mSpeedModifier = max(ADVANCED_SPEED_MIN, min(mSpeedModifier, ADVANCED_SPEED_MAX));
 	RegistryReadInteger("Enhanced_QuickLevel", &mQuickLevel);
 	mQuickLevel = max(1, min(mQuickLevel, NUM_LEVELS));
 
@@ -1946,6 +1940,7 @@ void SexyAppBase::ReadFromRegistry()
 	RegistryReadBoolean("Enhanced_ZombieHealthbars", &mZombieHealthbars);
 	RegistryReadBoolean("Enhanced_PlantHealthbars", &mPlantHealthbars);
 	RegistryReadBoolean("Enhanced_CrazyDaveSeeds", &mCrazySeeds);
+	RegistryReadString("Enhanced_Language", &mLanguage);
 	RegistryReadBoolean("3DAcceleration", &mIs3dAccel);
 
 	if (RegistryReadInteger("InProgress", &anInt))
@@ -3772,6 +3767,33 @@ LRESULT CALLBACK SexyAppBase::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 	else
 		return DefWindowProcA(hWnd, uMsg, wParam, lParam);
+}
+
+void SexyAppBase::SwitchLanguage()
+{
+	mLanguageIndex = (mLanguageIndex + 1) % mLanguages.size();
+	int aIndex = 0;
+	for (std::map<std::string, StringWStringMap>::iterator it = mLanguages.begin(); it != mLanguages.end(); ++it, ++aIndex)
+	{
+		if (aIndex == mLanguageIndex)
+		{
+			mLanguage = it->first;
+			break;
+		}
+	}
+	LoadCurrentLanguage();
+}
+
+void SexyAppBase::LoadCurrentLanguage()
+{
+	for (std::map<std::string, StringWStringMap>::iterator it = mLanguages.begin(); it != mLanguages.end(); ++it)
+	{
+		if (it->first == mLanguage)
+		{
+			mStringProperties = it->second;
+			break;
+		}
+	}
 }
 
 void SexyAppBase::HandleNotifyGameMessage(int theType, int theParam)
@@ -6144,10 +6166,7 @@ void SexyAppBase::Init()
 			char aPath[MAX_PATH];
 			aFunc(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, aPath);
 
-			std::string aDataPath = RemoveTrailingSlash(aPath) + "\\" + mFullCompanyName + "\\" + mProdName;
-			SetAppDataFolder("savefiles\\");
-			//MkDir(aDataPath);
-			//AllowAllAccess(aDataPath);
+			SetAppDataFolder("appdata\\");
 			if (mDemoFileName.length() < 2 || (mDemoFileName[1] != ':' && mDemoFileName[2] != '\\'))
 			{
 				mDemoFileName = GetAppDataFolder() + mDemoFileName;

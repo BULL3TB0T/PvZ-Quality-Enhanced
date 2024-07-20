@@ -19,6 +19,7 @@
 #include "../System/TypingCheck.h"
 #include "../../Sexy.TodLib/TodFoley.h"
 #include "../../Sexy.TodLib/TodDebug.h"
+#include "../../Sexy.TodLib/TodStringFile.h"
 #include "../../SexyAppFramework/Font.h"
 #include "../../Sexy.TodLib/Reanimator.h"
 #include "../../Sexy.TodLib/TodParticle.h"
@@ -333,7 +334,7 @@ GameSelector::GameSelector(LawnApp* theApp)
 	mLeafReanimID = mApp->ReanimationGetID(aLeafReanim);
 	mLeafCounter = 50;
 
-	mApp->mDetails = "In the Main Menu";
+	mApp->mDetails = _S("[DISCORD_MAIN_MENU]");
 
 	SyncProfile(false);
 	mApp->PlaySample(Sexy::SOUND_ROLL_IN);
@@ -483,7 +484,7 @@ void GameSelector::SyncProfile(bool theShowLoading)
 	{
 		mLoading = true;
 
-		mApp->DoDialog(Dialogs::DIALOG_MESSAGE, true, _S("Loading..."), _S(""), _S(""), Dialog::BUTTONS_NONE);
+		mApp->DoDialog(Dialogs::DIALOG_MESSAGE, true, _S("[USER_LOADING]"), _S(""), _S(""), Dialog::BUTTONS_NONE);
 		mApp->DrawDirtyStuff();
 		mApp->PreloadForUser();
 		mApp->KillDialog(Dialogs::DIALOG_MESSAGE);
@@ -784,17 +785,19 @@ void GameSelector::Update()
 	UpdateTooltip();
 	mApp->mZenGarden->UpdatePlantNeeds();
 
-	SexyString State;
+	SexyString aState;
 	if (mSelectorState == SELECTOR_SUB_MENU)
 	{
 		if (mApp->mAchievementScreen)
-			State = "Achievements";
-		else if(mApp->mQuickPlayScreen)
-			State = "Quick Play (" + mApp->GetStageString(mApp->mQuickLevel).erase(0, 1) + ")";
+			aState = _S("[DISCORD_ACHIEVEMENTS]");
+		else if (mApp->mQuickPlayScreen)
+			aState = TodReplaceString(_S("[DISCORD_QUICK_PLAY]"), _S("{LEVEL}"), mApp->GetStageString(mApp->mQuickLevel).erase(0, 1));
 	}
 	else
-		State = "Game Selector";
-	mApp->UpdateDiscordState(State);
+	{
+		aState = _S("[DISCORD_GAME_SELECTOR]");
+	}
+	mApp->UpdateDiscordState(aState);
 
 	if (mMovementTimer > 0)
 	{
