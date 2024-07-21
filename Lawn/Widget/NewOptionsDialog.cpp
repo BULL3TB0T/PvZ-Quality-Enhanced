@@ -344,7 +344,7 @@ void NewOptionsDialog::Draw(Sexy::Graphics* g)
         }
         else if (mAdvancedPage == 2)
         {
-            TodDrawString(g, TodStringTranslate(_S("[OPTIONS_SPEED_MULTIPLIER]")), ADVANCED_SPEED_X - 6, ADVANCED_SPEED_Y + 22, FONT_DWARVENTODCRAFT18, cTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
+            TodDrawString(g, TodStringTranslate(_S("[OPTIONS_SPEED_MODIFIER]")), ADVANCED_SPEED_X - 6, ADVANCED_SPEED_Y + 22, FONT_DWARVENTODCRAFT18, cTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
             TodDrawString(g, TodStringTranslate(_S("[OPTIONS_AUTO_COLLECT_SUNS]")), mAutoCollectSunsBox->mX - 6, mAutoCollectSunsBox->mY + 22, FONT_DWARVENTODCRAFT18, cTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
             TodDrawString(g, TodStringTranslate(_S("[OPTIONS_AUTO_COLLECT_COINS]")), mAutoCollectCoinsBox->mX - 6, mAutoCollectCoinsBox->mY + 22, FONT_DWARVENTODCRAFT18, cTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
             TodDrawString(g, TodStringTranslate(_S("[OPTIONS_ZOMBIE_HEALTHBARS]")), mZombieHealthbarsBox->mX - 6, mZombieHealthbarsBox->mY + 22, FONT_DWARVENTODCRAFT18, cTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
@@ -508,10 +508,10 @@ void NewOptionsDialog::Update()
                 mSpeedEditWidget->mString = mSpeedEditPrevText;
                 return;
             }
-            if (num < ADVANCED_SPEED_MIN)
-                mSpeedEditWidget->mString = to_string(ADVANCED_SPEED_MIN);
-            else if (num > ADVANCED_SPEED_MAX)
-                mSpeedEditWidget->mString = to_string(ADVANCED_SPEED_MAX);
+            if (num < SPEED_MODIFIER_MIN)
+                mSpeedEditWidget->mString = to_string(SPEED_MODIFIER_MIN);
+            else if (num > SPEED_MODIFIER_MAX)
+                mSpeedEditWidget->mString = to_string(SPEED_MODIFIER_MAX);
             mSpeedEditPrevText = mSpeedEditWidget->mString;
         }
     }

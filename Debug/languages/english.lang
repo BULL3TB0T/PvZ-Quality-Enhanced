@@ -2476,8 +2476,8 @@ Keybind: '{KEYBIND}'
 [OPTIONS_SHOVEL_KEYBIND]
 Shovel Keybind: 'S'
 
-[OPTIONS_SPEED_MULTIPLIER]
-Speed Multiplier
+[OPTIONS_SPEED_MODIFIER]
+Speed Modifier
 
 [OPTIONS_AUTO_COLLECT_SUNS]
 Auto-Collect Suns

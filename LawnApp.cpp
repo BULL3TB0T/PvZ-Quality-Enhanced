@@ -127,9 +127,9 @@ LawnApp::LawnApp()
 	mDebugKeysEnabled = false;
 	isFastMode = false;
 	mProdName = "PlantsVsZombies";
-	mVersion = "v2.1";
-	mReconVersion = "PvZ: Enhanced " + mVersion;
-	mTitle = _S("Plants vs. Zombies: Enhanced " + mVersion);
+	mVersion = "v2.2";
+	mReconVersion = "PvZ: QE " + mVersion;
+	mTitle = _S("Plants vs. Zombies: Quality Enhanced " + mVersion);
 	mCustomCursorsEnabled = false;
 	mPlayerInfo = nullptr;
 	mLastLevelStats = new LevelStats();
