@@ -127,7 +127,7 @@ LawnApp::LawnApp()
 	mDebugKeysEnabled = false;
 	isFastMode = false;
 	mProdName = "PlantsVsZombies";
-	mVersion = "v2.0";
+	mVersion = "v2.1";
 	mReconVersion = "PvZ: Enhanced " + mVersion;
 	mTitle = _S("Plants vs. Zombies: Enhanced " + mVersion);
 	mCustomCursorsEnabled = false;
@@ -154,7 +154,7 @@ LawnApp::LawnApp()
 	mCrazyDaveMessageIndex = -1;
 	mBigArrowCursor = LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_CURSOR1));
 	mDRM = nullptr;
-	mPlayedQuickplay = false;
+	mPlayingQuickplay = false;
 }
 
 LawnApp::~LawnApp()
@@ -436,7 +436,7 @@ void LawnApp::PreNewGame(GameMode theGameMode, bool theLookForSavedGame)
 
 void LawnApp::StartQuickPlay()
 {
-	mPlayedQuickplay = true;
+	mPlayingQuickplay = true;
 	NewGame();
 }
 
@@ -499,7 +499,7 @@ void LawnApp::NewGame()
 void LawnApp::ShowGameSelector()
 {
 	KillBoard();
-	mPlayedQuickplay = false;
+	mPlayingQuickplay = false;
 	//UpdateRegisterInfo();
 	if (mGameSelector)
 	{
@@ -719,7 +719,7 @@ void LawnApp::DoBackToMain(bool hasSound)
 	WriteCurrentUserConfig();
 	KillNewOptionsDialog();
 	KillBoard();
-	mPlayedQuickplay = false;
+	mPlayingQuickplay = false;
 	ShowGameSelector();
 	if (hasSound)
 		PlaySample(Sexy::SOUND_BUTTONCLICK);
@@ -1576,7 +1576,7 @@ void LawnApp::CheckForGameEnd()
 		return;
 	isFastMode = false;
 
-	if (mPlayedQuickplay)
+	if (mPlayingQuickplay)
 	{
 		ShowGameSelector();
 		return;
@@ -2285,13 +2285,9 @@ bool LawnApp::IsContinuousChallenge()
 
 bool LawnApp::IsArtChallenge()
 {
-	if (mBoard == nullptr)
-		return false;
-
-	return 
-		mGameMode == GameMode::GAMEMODE_CHALLENGE_ART_CHALLENGE_WALLNUT || 
-		mGameMode == GameMode::GAMEMODE_CHALLENGE_ART_CHALLENGE_SUNFLOWER || 
-		mGameMode == GameMode::GAMEMODE_CHALLENGE_SEEING_STARS;
+	return mBoard && (mGameMode == GameMode::GAMEMODE_CHALLENGE_ART_CHALLENGE_WALLNUT ||
+		mGameMode == GameMode::GAMEMODE_CHALLENGE_ART_CHALLENGE_SUNFLOWER ||
+		mGameMode == GameMode::GAMEMODE_CHALLENGE_SEEING_STARS);
 }
 
 bool LawnApp::IsSquirrelLevel()
@@ -2301,20 +2297,7 @@ bool LawnApp::IsSquirrelLevel()
 
 bool LawnApp::IsIZombieLevel()
 {
-	if (mBoard == nullptr)
-		return false;
-
-	return
-		mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_1 ||
-		mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_2 ||
-		mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_3 ||
-		mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_4 ||
-		mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_5 ||
-		mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_6 ||
-		mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_7 ||
-		mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_8 ||
-		mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_9 ||
-		mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS;
+	return mBoard && mGameMode >= GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_1 && mGameMode <= GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS;
 }
 
 bool LawnApp::IsShovelLevel()
@@ -2330,15 +2313,12 @@ bool LawnApp::IsWallnutBowlingLevel()
 	if (mGameMode == GameMode::GAMEMODE_CHALLENGE_WALLNUT_BOWLING || mGameMode == GameMode::GAMEMODE_CHALLENGE_WALLNUT_BOWLING_2)
 		return true;
 
-	if (mPlayedQuickplay)
-		return mQuickLevel == 5;
-
-	return IsAdventureMode() && mPlayerInfo->mLevel == 5;
+	return IsAdventureMode() && mBoard->mLevel == 5;
 }
 
 bool LawnApp::IsSlotMachineLevel()
 {
-	return (mBoard && mGameMode == GameMode::GAMEMODE_CHALLENGE_SLOT_MACHINE);
+	return mBoard && mGameMode == GameMode::GAMEMODE_CHALLENGE_SLOT_MACHINE;
 }
 
 bool LawnApp::IsWhackAZombieLevel()
@@ -2349,10 +2329,7 @@ bool LawnApp::IsWhackAZombieLevel()
 	if (mGameMode == GameMode::GAMEMODE_CHALLENGE_WHACK_A_ZOMBIE)
 		return true;
 
-	if (mPlayedQuickplay)
-		return mQuickLevel == 15;
-
-	return IsAdventureMode() && mPlayerInfo->mLevel == 15;
+	return IsAdventureMode() && mBoard->mLevel == 15;
 }
 
 bool LawnApp::IsLittleTroubleLevel()
@@ -2363,10 +2340,7 @@ bool LawnApp::IsLittleTroubleLevel()
 	if (mGameMode == GameMode::GAMEMODE_CHALLENGE_LITTLE_TROUBLE)
 		return true;
 
-	if (mPlayedQuickplay)
-		return mQuickLevel == 25;
-
-	return IsAdventureMode() && mPlayerInfo->mLevel == 25;
+	return IsAdventureMode() && mBoard->mLevel == 25;
 }
 
 bool LawnApp::IsScaryPotterLevel()
@@ -2374,10 +2348,7 @@ bool LawnApp::IsScaryPotterLevel()
 	if (mGameMode >= GameMode::GAMEMODE_SCARY_POTTER_1 && mGameMode <= GameMode::GAMEMODE_SCARY_POTTER_ENDLESS)
 		return true;
 
-	if (mPlayedQuickplay)
-		return mQuickLevel == 35;
-
-	return IsAdventureMode() && mPlayerInfo->mLevel == 35;
+	return IsAdventureMode() && mBoard->mLevel == 35;
 }
 
 bool LawnApp::IsStormyNightLevel()
@@ -2387,11 +2358,8 @@ bool LawnApp::IsStormyNightLevel()
 
 	if (mGameMode == GameMode::GAMEMODE_CHALLENGE_STORMY_NIGHT)
 		return true;
-
-	if (mPlayedQuickplay)
-		return mQuickLevel == 40;
-
-	return IsAdventureMode() && mPlayerInfo->mLevel == 40;
+	
+	return IsAdventureMode() && mBoard->mLevel == 40;
 }
 
 bool LawnApp::IsBungeeBlitzLevel()
@@ -2402,10 +2370,7 @@ bool LawnApp::IsBungeeBlitzLevel()
 	if (mGameMode == GameMode::GAMEMODE_CHALLENGE_BUNGEE_BLITZ)
 		return true;
 
-	if (mPlayedQuickplay)
-		return mQuickLevel == 45;
-
-	return IsAdventureMode() && mPlayerInfo->mLevel == 45;
+	return IsAdventureMode() && mBoard->mLevel == 45;
 }
 
 bool LawnApp::IsMiniBossLevel()
@@ -2416,14 +2381,7 @@ bool LawnApp::IsMiniBossLevel()
 	if (!IsAdventureMode())
 		return false;
 
-	if (mPlayedQuickplay)
-	{
-		return mQuickLevel == 10 || mQuickLevel == 20 || mQuickLevel == 30;
-	}
-	else
-	{
-		return mPlayerInfo->mLevel == 10 || mPlayerInfo->mLevel == 20 || mPlayerInfo->mLevel == 30;
-	}
+	return IsAdventureMode() && (mBoard->mLevel == 10 || mBoard->mLevel == 20 || mBoard->mLevel == 30);
 }
 
 bool LawnApp::IsFinalBossLevel()
@@ -2434,10 +2392,7 @@ bool LawnApp::IsFinalBossLevel()
 	if (mGameMode == GameMode::GAMEMODE_CHALLENGE_FINAL_BOSS)
 		return true;
 
-	if (mPlayedQuickplay)
-		return mQuickLevel == 50;
-
-	return IsAdventureMode() && mPlayerInfo->mLevel == 50;
+	return IsAdventureMode() && mBoard->mLevel == 50;
 }
 
 bool LawnApp::IsChallengeWithoutSeedBank()
@@ -2463,7 +2418,7 @@ bool LawnApp::IsNight()
 	if (IsIceDemo() || mPlayerInfo == nullptr)
 		return false;
 
-	if (mPlayedQuickplay)
+	if (mPlayingQuickplay)
 	{
 		return (mQuickLevel >= 11 && mQuickLevel <= 20) || (mQuickLevel >= 31 && mQuickLevel <= 40) || mQuickLevel == 50;
 	}

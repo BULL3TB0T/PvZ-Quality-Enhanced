@@ -135,7 +135,7 @@ public:
 	SexyString						mVersion;
 	SexyString						mReconVersion;
 	SexyString						mGitCommit;
-	bool							mPlayedQuickplay;
+	bool							mPlayingQuickplay;
 	time_t							mStartTime;
 	SexyString                      mDetails;
 	SexyString                      mState;
@@ -345,7 +345,7 @@ public:
 	bool							Is3dAccel();
 	static /*inline*/ void			CenterDialog(Dialog* theDialog, int theWidth, int theHeight);
 	void							GetAchievement(AchievementType theAchievementType);
-	void							UpdateDiscordState(SexyString def = "");
+	void							UpdateDiscordState(SexyString theState = "");
 };
 
 SexyString							LawnGetCurrentLevelName();

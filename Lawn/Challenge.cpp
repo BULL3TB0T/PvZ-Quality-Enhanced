@@ -5292,10 +5292,8 @@ void Challenge::TreeOfWisdomGrow()
 		mChallengeState = STATECHALLENGE_NORMAL;
 	}
 
-	if (TreeOfWisdomGetSize() == 100)
-	{
+	if (aTreeSize == 100)
 		mApp->GetAchievement(ACHIEVEMENT_TOWERING_WISDOM);
-	}
 }
 
 void Challenge::TreeOfWisdomFertilize()

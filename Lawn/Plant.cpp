@@ -2419,7 +2419,7 @@ void Plant::UpdateBowling()
             aZombie->TakeDamage(1800, 0U);
         }
 
-        if ((!mApp->IsFirstTimeAdventureMode() || mApp->mPlayerInfo->mLevel > 10) && mSeedType == SeedType::SEED_WALLNUT && !mApp->mPlayedQuickplay)
+        if ((!mApp->IsFirstTimeAdventureMode() || mApp->mPlayerInfo->mLevel > 10) && mSeedType == SeedType::SEED_WALLNUT && !mApp->mPlayingQuickplay)
         {
             mLaunchCounter++;
             if (mLaunchCounter == 2)
@@ -4276,7 +4276,7 @@ void Plant::DoSpecial()
         mApp->PlayFoley(FoleyType::FOLEY_CHERRYBOMB);
         mApp->PlayFoley(FoleyType::FOLEY_JUICY);
 
-        if (mBoard->GetAllZombiesInRadius(mRow, aPosX, aPosY, 115, 1, aDamageRangeFlags) >= 10 && !mApp->mPlayedQuickplay)
+        if (mBoard->GetAllZombiesInRadius(mRow, aPosX, aPosY, 115, 1, aDamageRangeFlags) >= 10 && !mApp->mPlayingQuickplay)
         {
             mApp->GetAchievement(ACHIEVEMENT_EXPLODONATOR);
         }
@@ -4345,7 +4345,7 @@ void Plant::DoSpecial()
 
         mApp->PlaySample(SOUND_POTATO_MINE);
         mBoard->KillAllZombiesInRadius(mRow, aPosX, aPosY, 60, 0, false, aDamageRangeFlags);
-        if(!mApp->IsIZombieLevel() && !mApp->mPlayedQuickplay)
+        if(!mApp->IsIZombieLevel() && !mApp->mPlayingQuickplay)
             mApp->GetAchievement(AchievementType::ACHIEVEMENT_SPUDOW);
 
         int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);

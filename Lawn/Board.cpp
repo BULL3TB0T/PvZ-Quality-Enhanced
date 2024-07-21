@@ -335,7 +335,7 @@ void Board::TryToSaveGame()
 bool Board::NeedSaveGame()
 {
 	return
-		!mApp->mPlayedQuickplay &&
+		!mApp->mPlayingQuickplay &&
 		mApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_ICE &&
 		mApp->mGameMode != GameMode::GAMEMODE_UPSELL &&
 		mApp->mGameMode != GameMode::GAMEMODE_INTRO &&
@@ -1318,7 +1318,7 @@ void Board::InitLevel()
 	mEnableGraveStones = false;
 	mSodPosition = 0;
 	mPrevBoardResult = mApp->mBoardResult;
-	if (mApp->mPlayedQuickplay)
+	if (mApp->mPlayingQuickplay)
 	{
 		mApp->mGameMode = GameMode::GAMEMODE_ADVENTURE;
 		mLevel = mApp->mQuickLevel;
@@ -1723,7 +1723,7 @@ void Board::UpdateLevelEndSequence()
 	mBoardFadeOutCounter--;
 	if (mBoardFadeOutCounter == 0)
 	{
-		if (mApp->mPlayedQuickplay && mApp->mQuickLevel != FINAL_LEVEL)
+		if (mApp->mPlayingQuickplay && mApp->mQuickLevel != FINAL_LEVEL)
 		{
 			LawnDialog* aDialog = (LawnDialog*)mApp->DoDialog(DIALOG_MESSAGE, true, _S("[QUICK_PLAY_HEADER]"), _S("[QUICK_PLAY]"), "", Dialog::BUTTONS_YES_NO);
 			if (aDialog->WaitForResult(true) == Dialog::ID_YES)
@@ -1752,7 +1752,7 @@ void Board::UpdateLevelEndSequence()
 		}
 	}
 
-	if (CanDropLoot() && !IsSurvivalStageWithRepick() && !mApp->mPlayedQuickplay)
+	if (CanDropLoot() && !IsSurvivalStageWithRepick() && !mApp->mPlayingQuickplay)
 	{
 		mScoreNextMowerCounter = 40;
 		LawnMower* aLawnMower = GetBottomLawnMower();
@@ -2608,7 +2608,7 @@ Zombie* Board::AddZombieInRow(ZombieType theZombieType, int theRow, int theFromW
 		TodTrace("Too many zombies!!");
 		return nullptr;
 	}
-	if (theZombieType == ZombieType::ZOMBIE_YETI && !mApp->mPlayedQuickplay)
+	if (theZombieType == ZombieType::ZOMBIE_YETI && !mApp->mPlayingQuickplay)
 		mApp->GetAchievement(ACHIEVEMENT_ZOMBOLOGIST);
 	bool aVariant = !Rand(5);
 	Zombie* aZombie = mZombies.DataArrayAlloc();
@@ -5600,12 +5600,14 @@ void Board::Update()
 	if (!mApp->IsAdventureMode())
 		aDetails = mApp->GetCurrentChallengeDef().mChallengeName;
 	else
-		aDetails = TodReplaceString(mApp->mPlayedQuickplay ? _S("[DISCORD_BOARD_QUICK_PLAY]") : _S("[DISCORD_BOARD_ADVENTURE]"), _S("{LEVEL}"), mApp->GetStageString(mLevel).erase(0, 1));
+		aDetails = TodReplaceString(mApp->mPlayingQuickplay ? _S("[DISCORD_BOARD_QUICK_PLAY]") : _S("[DISCORD_BOARD_ADVENTURE]"), _S("{LEVEL}"), mApp->GetStageString(mLevel).erase(0, 1));
 	mApp->mDetails = aDetails;
 
 	SexyString aState;
 	if (mApp->GetDialog(Dialogs::DIALOG_CONTINUE))
 		aState = _S("[DISCORD_BOARD_CONTINUE_DIALOG]");
+	else if (mApp->GetDialog(Dialogs::DIALOG_PAUSED))
+		aState = _S("[DISCORD_BOARD_PAUSED_DIALOG]");
 	else if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON)
 		aState = _S("[DISCORD_BOARD_GAME_OVER]");
 	else if (mCutScene->mSeedChoosing)
@@ -5620,7 +5622,7 @@ void Board::Update()
 		aState = _S("[DISCORD_BOARD_PLAYING]");
 	mApp->UpdateDiscordState(aState);
 
-	if(mSunMoney >= 8000 && !mApp->mPlayedQuickplay)
+	if(mSunMoney >= 8000 && !mApp->mPlayingQuickplay)
 		mApp->GetAchievement(ACHIEVEMENT_SUNNY_DAYS);
 
 	mCutScene->Update();
@@ -6659,7 +6661,7 @@ void Board::DrawLevel(Graphics* g)
 	SexyString aLevelStr;
 	if (mApp->IsAdventureMode())
 	{
-		aLevelStr = TodReplaceString(mApp->mPlayedQuickplay ? _S("[QUICK_PLAY_LEVEL]") : _S("[LEVEL]"), _S("{LEVEL}"), mApp->GetStageString(mLevel).erase(0, 1));
+		aLevelStr = TodReplaceString(mApp->mPlayingQuickplay ? _S("[QUICK_PLAY_LEVEL]") : _S("[LEVEL]"), _S("{LEVEL}"), mApp->GetStageString(mLevel).erase(0, 1));
 	}
 	else
 	{
@@ -9332,7 +9334,7 @@ void Board::DropLootPiece(int thePosX, int thePosY, int theDropFactor)
 		}
 	}
 
-	if (mApp->mPlayedQuickplay)
+	if (mApp->mPlayingQuickplay)
 		return;
 
 	if (mTotalSpawnedWaves > 70)

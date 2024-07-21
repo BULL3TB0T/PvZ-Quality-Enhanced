@@ -73,6 +73,9 @@ Choosing Plants
 [DISCORD_BOARD_GAME_OVER]
 Game Over
 
+[DISCORD_BOARD_PAUSED_DIALOG]
+Game Paused
+
 [DISCORD_BOARD_CONTINUE_DIALOG]
 Continue Dialog
 

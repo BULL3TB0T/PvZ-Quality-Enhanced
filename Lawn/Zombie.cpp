@@ -4606,7 +4606,7 @@ void Zombie::AnimateChewSound()
             mAnimTicksPerFrame = 18;
             UpdateAnimSpeed();
 
-            if (mZombieType == ZombieType::ZOMBIE_DANCER && !mApp->mPlayedQuickplay)
+            if (mZombieType == ZombieType::ZOMBIE_DANCER && !mApp->mPlayingQuickplay)
             {
                 mApp->GetAchievement(AchievementType::ACHIEVEMENT_DISCO_IS_UNDEAD);
             }
@@ -6925,7 +6925,7 @@ bool Zombie::TrySpawnLevelAward()
     }
 
     CoinType aCoinType;
-    if (mApp->mPlayedQuickplay)
+    if (mApp->mPlayingQuickplay)
     {
         aCoinType = CoinType::COIN_NONE;
         mBoard->FadeOutLevel();
@@ -7056,7 +7056,7 @@ void Zombie::DropLoot()
     Rect aZombieRect = GetZombieRect();
     int aCenterX = aZombieRect.mX + aZombieRect.mWidth / 2;
     int aCenterY = aZombieRect.mY + aZombieRect.mHeight / 4;
-    if (mZombieType == ZombieType::ZOMBIE_YETI && !mApp->mPlayedQuickplay)
+    if (mZombieType == ZombieType::ZOMBIE_YETI && !mApp->mPlayingQuickplay)
     {
         mApp->PlayFoley(FoleyType::FOLEY_SPAWN_SUN);
         mBoard->AddCoin(aCenterX - 20, aCenterY, CoinType::COIN_DIAMOND, CoinMotion::COIN_MOTION_COIN);

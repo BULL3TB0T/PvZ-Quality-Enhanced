@@ -67,7 +67,7 @@ void ToolTipWidget::CalculateSize()
 
 	SexyString aTitle = TodStringTranslate(mTitle);
 	SexyString aWarningText = TodStringTranslate(mWarningText);
-	int aTitleWidth = FONT_BRIANNETOD12->StringWidth(aTitle);
+	int aTitleWidth = FONT_BRIANNETOD16->StringWidth(aTitle);
 	int aWarningWidth = FONT_BRIANNETOD12->StringWidth(aWarningText);
 	int aMaxWidth = max(aTitleWidth, aWarningWidth);
 
@@ -83,7 +83,7 @@ void ToolTipWidget::CalculateSize()
 	int aHeight = 6;
 	if (!aTitle.empty())
 	{
-		aHeight = FONT_BRIANNETOD12->GetAscent() + 8;
+		aHeight = FONT_BRIANNETOD16->GetAscent() + 8;
 	}
 	if (!aWarningText.empty())
 	{
@@ -152,9 +152,9 @@ void ToolTipWidget::Draw(Graphics* g)
 	SexyString aTitle = TodStringTranslate(mTitle);
 	if (!aTitle.empty())
 	{
-		g->SetFont(FONT_BRIANNETOD12);
-		g->DrawString(aTitle, aPosX + (mWidth - FONT_BRIANNETOD12->StringWidth(aTitle)) / 2, aPosY + FONT_BRIANNETOD12->GetAscent());
-		aPosY += FONT_BRIANNETOD12->GetAscent() + 2;
+		g->SetFont(FONT_BRIANNETOD16);
+		g->DrawString(aTitle, aPosX + (mWidth - FONT_BRIANNETOD16->StringWidth(aTitle)) / 2, aPosY + FONT_BRIANNETOD16->GetAscent());
+		aPosY += FONT_BRIANNETOD16->GetAscent() + 2;
 	}
 
 	SexyString aWarningText = TodStringTranslate(mWarningText);

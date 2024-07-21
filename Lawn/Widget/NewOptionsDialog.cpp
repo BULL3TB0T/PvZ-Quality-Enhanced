@@ -597,7 +597,7 @@ void NewOptionsDialog::ButtonDepress(int theId)
                 mApp->KillNewOptionsDialog();
                 mApp->mBoardResult = BoardResult::BOARDRESULT_RESTART;
                 mApp->mSawYeti = mApp->mBoard->mKilledYeti;
-                if (mApp->mPlayedQuickplay)
+                if (mApp->mPlayingQuickplay)
                     mApp->StartQuickPlay();
                 else
                     mApp->PreNewGame(mApp->mGameMode, false);
