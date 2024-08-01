@@ -17,14 +17,15 @@
 #include "../../SexyAppFramework/Slider.h"
 
 int gZombieDefeated[NUM_ZOMBIE_TYPES] = { false };
-const Rect cSeedClipRect = Rect(0, 90, BOARD_WIDTH, 463);
-const int cZombieHeight = 80;
-const int cZombieOffsetY = 6;
-const Rect cZombieClipRect = Rect(0, cZombieHeight + cZombieOffsetY, BOARD_WIDTH, 474);
 const int cSeedPacketRows = 8;
-const int cSeedPacketHeight = SEED_PACKET_HEIGHT + 8;
+const int cSeedPacketYOffset = 8;
+const int cSeedPacketYStartOffset = 14;
+const Rect cSeedClipRect = Rect(0, SEED_PACKET_HEIGHT + cSeedPacketYOffset + cSeedPacketYStartOffset, BOARD_WIDTH, 460);
+const int cZombieHeight = 80;
+const int cZombieYStartOffset = 6;
+const Rect cZombieClipRect = Rect(0, cZombieHeight + cZombieYStartOffset, BOARD_WIDTH, 474);
 const int cZombieRows = 5;
-const char* cWeirdCharacters[] = {"®"};
+const char* cWeirdCharacters[] = { "®" };
 
 AlmanacDialog::AlmanacDialog(LawnApp* theApp) : LawnDialog(theApp, DIALOG_ALMANAC, true, _S("Almanac"), _S(""), _S(""), BUTTONS_NONE)
 {
@@ -96,14 +97,14 @@ AlmanacDialog::AlmanacDialog(LawnApp* theApp) : LawnDialog(theApp, DIALOG_ALMANA
 	mPlantSlider = new Sexy::Slider(IMAGE_OPTIONS_SLIDERSLOT_PLANT, IMAGE_OPTIONS_SLIDERKNOB_PLANT, 0, this);
 	mPlantSlider->SetValue(max(0.0, min(mMaxScrollPosition, mScrollPosition)));
 	mPlantSlider->mHorizontal = false;
-	mPlantSlider->Resize(10, 85, 20, 470);
+	mPlantSlider->Resize(10, cSeedClipRect.mY, 20, cSeedClipRect.mHeight);
 	mPlantSlider->mThumbOffsetX = -5;
 	mPlantSlider->mVisible = false;
 
 	mZombieSlider = new Sexy::Slider(IMAGE_CHALLENGE_SLIDERSLOT, IMAGE_OPTIONS_SLIDERKNOB2, 0, this);
 	mZombieSlider->SetValue(max(0.0, min(mMaxScrollPosition, mScrollPosition)));
 	mZombieSlider->mHorizontal = false;
-	mZombieSlider->Resize(10, 85, 20, 470);
+	mZombieSlider->Resize(10, cZombieClipRect.mY, 20, cZombieClipRect.mHeight);
 	mZombieSlider->mThumbOffsetX = -1;
 	mZombieSlider->mVisible = false;
 
@@ -261,7 +262,7 @@ void AlmanacDialog::Update()
 
 	if (mOpenPage == ALMANAC_PAGE_PLANTS)
 	{
-		mMaxScrollPosition = cSeedPacketHeight * ((cSeedClipRect.mHeight % SEED_PACKET_HEIGHT == 0 ? 1 : 0) - (cSeedClipRect.mHeight / cSeedPacketHeight) + ((NUM_SEEDS_IN_CHOOSER - 2) / cSeedPacketRows));
+		mMaxScrollPosition = max(0, (((NUM_SEEDS_IN_CHOOSER - 2) / cSeedPacketRows) * (SEED_PACKET_HEIGHT + cSeedPacketYOffset)) + SEED_PACKET_HEIGHT - cSeedClipRect.mHeight);
 		float aScrollSpeed = mBaseScrollSpeed + abs(mScrollAmount) * mScrollAccel;
 		mScrollPosition = ClampFloat(mScrollPosition += mScrollAmount * aScrollSpeed, 0, mMaxScrollPosition);
 		mScrollAmount *= (1.0f - mScrollAccel);
@@ -269,7 +270,7 @@ void AlmanacDialog::Update()
 	}
 	else if (mOpenPage == ALMANAC_PAGE_ZOMBIES)
 	{
-		mMaxScrollPosition = cZombieHeight * ((cZombieClipRect.mHeight % cZombieHeight == 0 ? 1 : 0) - (cZombieClipRect.mHeight / cZombieHeight) + ((NUM_ZOMBIES_IN_ALMANAC - 1) / cZombieRows));
+		mMaxScrollPosition = max(0, (((NUM_ZOMBIES_IN_ALMANAC - 1) / cZombieRows) * cZombieHeight) + cZombieHeight - cZombieYStartOffset - cZombieClipRect.mHeight);
 		float aScrollSpeed = mBaseScrollSpeed + abs(mScrollAmount) * mScrollAccel;
 		mScrollPosition += mScrollAmount * aScrollSpeed;
 		mScrollPosition = ClampFloat(mScrollPosition, 0, mMaxScrollPosition);
@@ -560,7 +561,7 @@ void AlmanacDialog::DrawZombies(Graphics* g)
 		{
 		case ZombieType::ZOMBIE_ZAMBONI:		aZombieGraphics.TranslateF(-30, 5);		break;
 		case ZombieType::ZOMBIE_GARGANTUAR:
-		case ZombieType::ZOMBIE_REDEYE_GARGANTUAR:	aZombieGraphics.TranslateF(0, 40);		break;
+		case ZombieType::ZOMBIE_REDEYE_GARGANTUAR:	aZombieGraphics.TranslateF(0, 30);		break;
 		case ZombieType::ZOMBIE_FOOTBALL:		aZombieGraphics.TranslateF(-17, 5);		break;
 		case ZombieType::ZOMBIE_BALLOON:		aZombieGraphics.TranslateF(0, -20);		break;
 		case ZombieType::ZOMBIE_BUNGEE:			aZombieGraphics.TranslateF(15, 0);		break;
@@ -684,11 +685,10 @@ void AlmanacDialog::GetSeedPosition(SeedType theSeedType, int& x, int& y)
 		x = 20, y = 23;
 	else
 	{
-		int aFinalSeedType = aPlantIndex;
-		int width = SEED_PACKET_WIDTH + 2;
-		int offsetY = 14;
-		x = aFinalSeedType % cSeedPacketRows * width + (width / 2);
-		y = aFinalSeedType / cSeedPacketRows * cSeedPacketHeight + (cSeedPacketHeight + offsetY) - mScrollPosition;
+		int aSeedPacketWidth = SEED_PACKET_WIDTH + 2;
+		int aSeedPacketHeight = SEED_PACKET_HEIGHT + cSeedPacketYOffset;
+		x = aPlantIndex % cSeedPacketRows * aSeedPacketWidth + (aSeedPacketWidth / 2);
+		y = aPlantIndex / cSeedPacketRows * aSeedPacketHeight + (aSeedPacketHeight + cSeedPacketYStartOffset) - mScrollPosition;
 	}
 }
 
@@ -767,7 +767,7 @@ int AlmanacDialog::ZombieHasDescription(ZombieType theZombieType)
 void AlmanacDialog::GetZombiePosition(ZombieType theZombieType, int& x, int& y)
 {
 	x = theZombieType % cZombieRows * 85 + 22;
-	y = theZombieType / cZombieRows * cZombieHeight + (cZombieHeight + cZombieOffsetY) - mScrollPosition;
+	y = theZombieType / cZombieRows * cZombieHeight + (cZombieHeight + cZombieYStartOffset) - mScrollPosition;
 }
 
 ZombieType AlmanacDialog::ZombieHitTest(int x, int y)
@@ -814,7 +814,7 @@ void AlmanacDialog::MouseDown(int x, int y, int theClickCount)
 {
 	if (mDescriptionSliderRect.Contains(x, y))
 	{
-		mDescriptionOffsetY = y - (mDescriptionOverfill ? (mDescriptionScroll / mDescriptionMaxScroll) * (mDescriptionRect.mHeight - ALMANAC_DESCRIPTION_MIN_HEIGHT) : 0);
+		mDescriptionYOffset = y - (mDescriptionOverfill ? (mDescriptionScroll / mDescriptionMaxScroll) * (mDescriptionRect.mHeight - ALMANAC_DESCRIPTION_MIN_HEIGHT) : 0);
 		mDescriptionOffsetScroll = mDescriptionScroll;
 		mDescriptionSliderDragging = true;
 		return;
@@ -846,11 +846,11 @@ void AlmanacDialog::MouseDrag(int x, int y)
 	{
 		if (mDescriptionOverfill)
 		{
-			mDescriptionScroll = ((y - mDescriptionOffsetY) / (mDescriptionRect.mHeight - ALMANAC_DESCRIPTION_MIN_HEIGHT)) * mDescriptionMaxScroll;
+			mDescriptionScroll = ((y - mDescriptionYOffset) / (mDescriptionRect.mHeight - ALMANAC_DESCRIPTION_MIN_HEIGHT)) * mDescriptionMaxScroll;
 		}
 		else
 		{
-			mDescriptionScroll = y - (mDescriptionOffsetY - mDescriptionOffsetScroll);
+			mDescriptionScroll = y - (mDescriptionYOffset - mDescriptionOffsetScroll);
 		}
 		if (mDescriptionScroll < 0)
 		{

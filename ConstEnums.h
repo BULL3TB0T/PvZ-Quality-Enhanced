@@ -1386,7 +1386,6 @@ enum ZombieType
     ENUM_VALUE(NUM_ZOMBIES_IN_ALMANAC, ZOMBIE_BOSS + 1)
 };
 
-
 enum AttachmentID { ATTACHMENTID_NULL };
 enum CoinID { COINID_NULL };
 enum ParticleID { PARTICLEID_NULL };

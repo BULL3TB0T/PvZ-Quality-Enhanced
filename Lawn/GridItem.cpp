@@ -77,22 +77,18 @@ void GridItem::DrawGridItem(Graphics* g)
     case GridItemType::GRIDITEM_GRAVESTONE:         DrawGraveStone(g);                              break;
     case GridItemType::GRIDITEM_CRATER:             DrawCrater(g);                                  break;
     case GridItemType::GRIDITEM_LADDER:             DrawLadder(g);                                  break;
-    case GridItemType::GRIDITEM_PORTAL_CIRCLE:                                                      break;
-    case GridItemType::GRIDITEM_PORTAL_SQUARE:                                                      break;
-    case GridItemType::GRIDITEM_ZEN_TOOL:                                                           break;
-    case GridItemType::GRIDITEM_RAKE:                                                               break;
     case GridItemType::GRIDITEM_BRAIN:              g->DrawImageF(IMAGE_BRAIN, mPosX, mPosY);       break;
     case GridItemType::GRIDITEM_SCARY_POT:          DrawScaryPot(g);                                break;
     case GridItemType::GRIDITEM_SQUIRREL:           DrawSquirrel(g);                                break;
     case GridItemType::GRIDITEM_STINKY:             DrawStinky(g);                                  break;
     case GridItemType::GRIDITEM_IZOMBIE_BRAIN:      DrawIZombieBrain(g);                            break;
-    default:                                        TOD_ASSERT();                                   break;
-    }
-
-    Reanimation* aGridItemReanim = mApp->ReanimationTryToGet(mGridItemReanimID);
-    if (aGridItemReanim)
-    {
-        aGridItemReanim->Draw(g);
+    default:
+        Reanimation* aGridItemReanim = mApp->ReanimationTryToGet(mGridItemReanimID);
+        if (aGridItemReanim)
+        {
+            aGridItemReanim->Draw(g);
+        }                                
+        break;
     }
 
     TodParticleSystem* aGridItemParticle = mApp->ParticleTryToGet(mGridItemParticleID);

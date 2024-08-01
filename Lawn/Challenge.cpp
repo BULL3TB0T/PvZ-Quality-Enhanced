@@ -202,7 +202,7 @@ ZombieAllowedLevels gZombieAllowedLevels[NUM_ZOMBIE_TYPES] = {
 			0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
 		}
 	},
-	{ ZOMBIE_YETI, {0} },
+	{ ZOMBIE_YETI, {} },
 	{ ZOMBIE_BUNGEE,
 		{
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -248,14 +248,14 @@ ZombieAllowedLevels gZombieAllowedLevels[NUM_ZOMBIE_TYPES] = {
 			0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
 		}
 	},
-	{ ZOMBIE_BOSS, {0} },
-	{ ZOMBIE_REDEYE_GARGANTUAR, {0} },
-	{ ZOMBIE_PEA_HEAD, {0} },
-	{ ZOMBIE_WALLNUT_HEAD, {0} },
-	{ ZOMBIE_JALAPENO_HEAD, {0} },
-	{ ZOMBIE_GATLING_HEAD, {0} },
-	{ ZOMBIE_SQUASH_HEAD, {0} },
-	{ ZOMBIE_TALLNUT_HEAD, {0} }
+	{ ZOMBIE_BOSS, {} },
+	{ ZOMBIE_REDEYE_GARGANTUAR, {} },
+	{ ZOMBIE_PEA_HEAD, {} },
+	{ ZOMBIE_WALLNUT_HEAD, {} },
+	{ ZOMBIE_JALAPENO_HEAD, {} },
+	{ ZOMBIE_GATLING_HEAD, {} },
+	{ ZOMBIE_SQUASH_HEAD, {} },
+	{ ZOMBIE_TALLNUT_HEAD, {} },
 };
 
 SeedType gArtChallengeWallnut[MAX_GRID_SIZE_Y][MAX_GRID_SIZE_X] = {  

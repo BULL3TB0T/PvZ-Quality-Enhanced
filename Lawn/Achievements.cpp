@@ -39,7 +39,7 @@ Achievements::Achievements(LawnApp* theApp)
 }
 void Achievements::GiveAchievement(AchievementType theAchivementType)
 {
-	if (!mApp || !mApp->mPlayerInfo || mApp->mPlayerInfo->mEarnedAchievements[theAchivementType])
+	if (!mApp || !mApp->mPlayerInfo || mApp->mPlayerInfo->mEarnedAchievements[theAchivementType] || !HAS_ACHIEVEMENTS)
 		return;
 
 	mApp->mPlayerInfo->mEarnedAchievements[theAchivementType] = true;
@@ -54,7 +54,7 @@ void Achievements::GiveAchievement(AchievementType theAchivementType)
 
 void Achievements::InitAchievement()
 {
-	if (!mApp || !mApp->mPlayerInfo)
+	if (!mApp || !mApp->mPlayerInfo || !HAS_ACHIEVEMENTS)
 		return;
 
 	if (mApp->HasFinishedAdventure())
@@ -67,7 +67,7 @@ void Achievements::InitAchievement()
 		GiveAchievement(AchievementType::ACHIEVEMENT_ZOMBOLOGIST);
 
 	int aTreeSize = mApp->mPlayerInfo->mChallengeRecords[GAMEMODE_TREE_OF_WISDOM - 1];
-	if (aTreeSize >= 100)
+	if (aTreeSize >= 100) 
 		GiveAchievement(AchievementType::ACHIEVEMENT_TOWERING_WISDOM);
 
 	if (mApp->GetNumTrophies(ChallengePage::CHALLENGE_PAGE_CHALLENGE) >= mApp->GetTotalTrophies(ChallengePage::CHALLENGE_PAGE_CHALLENGE))

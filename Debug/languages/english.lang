@@ -2491,8 +2491,23 @@ Zombie Healthbars
 [OPTIONS_PLANT_HEALTHBARS]
 Plant Healthbars
 
+[OPTIONS_RELOAD_LANGUAGES]
+Reload Languages
+
 [OPTIONS_LANGUAGE]
 Language:
+
+[OPTIONS_RELOAD_RESOURCE_PACKS]
+Reload Resource Packs
+
+[OPTIONS_RESOURCE_PACK]
+Resource Pack:
+
+[OPTIONS_ACTUAL_ACCELERATION]
+Actual 3D Acceleration
+
+[OPTIONS_CUSTOM_CURSOR]
+Custom Cursor
 
 [NO_WINDOWED_MODE_HEADER]
 No Windowed Mode
@@ -2512,6 +2527,12 @@ Your video card may not fully support this feature.
 
 
 If you experience slower performance, please disable Hardware Acceleration.
+
+[NO_RESOURCE_PACK]
+None
+
+[RESOURCE_PACK_EXAMPLE]
+Example
 
 [AWW_YEAH_BUTTON]
 AWW YEAH!

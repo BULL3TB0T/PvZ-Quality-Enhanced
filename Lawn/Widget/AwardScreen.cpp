@@ -383,28 +383,28 @@ void AwardScreen::Draw(Graphics* g)
         TodDrawString(g, aTitleString, 400, 58, Sexy::FONT_HOUSEOFTERROR28, Color(220, 220, 220), DS_ALIGN_CENTER);
         mMenuButton->mBtnNoDraw = true;
         g->SetClipRect(cAchievementClipRect);
-        int totalShown = 0;
-        int maxScroll = 0;
+        int aTotalShown = 0;
+        int aMaxScroll = 0;
         for (int i = 0; i < NUM_ACHIEVEMENTS; i++)
         {
-            if (mApp->mPlayerInfo->mEarnedAchievements[i] && !mApp->mPlayerInfo->mShownedAchievements[i] && mApp->mAchievements->ReturnShowInAwards(i)) 
+            if (mApp->mPlayerInfo->mEarnedAchievements[i] && !mApp->mPlayerInfo->mShownedAchievements[i] && mApp->mAchievements->ReturnShowInAwards(i))
             {
-                totalShown++;
+                aTotalShown++;
                 SexyString aAchievementName = StrFormat(_S("[ACHIEVEMENT_%s_TITLE]"), mApp->mAchievements->ReturnAchievementName(i).c_str());
                 SexyString aAchievementDesc = StrFormat(_S("[ACHIEVEMENT_%s_DESCRIPTION]"), mApp->mAchievements->ReturnAchievementName(i).c_str());
-                Rect textRect = Rect(80, 30, 320, 230);
-                int xPos = BOARD_WIDTH / 2 - textRect.mWidth / 2 - 35;
-                int offset = 75;
-                int yPos = 20 + (totalShown * offset) - mScrollPosition;
-                textRect.mX += xPos;
-                textRect.mY += yPos - 2;
-                g->DrawImageCel(Sexy::IMAGE_ACHIEVEMENTS_PORTRAITS, xPos, yPos, i);
-                TodDrawString(g, aAchievementName, textRect.mX, yPos + 23, Sexy::FONT_DWARVENTODCRAFT24, Color(255, 200, 0, 255), DS_ALIGN_LEFT);
-                TodDrawStringWrapped(g, aAchievementDesc, textRect, Sexy::FONT_DWARVENTODCRAFT12, Color(255, 255, 255), DS_ALIGN_LEFT);
-                maxScroll += offset;
+                Rect aTextRect = Rect(80, 30, 320, 230);
+                int aXPos = BOARD_WIDTH / 2 - aTextRect.mWidth / 2 - 35;
+                int aOffset = 75;
+                int aYPos = 20 + (aTotalShown * aOffset) - mScrollPosition;
+                aTextRect.mX += aXPos;
+                aTextRect.mY += aYPos - 2;
+                g->DrawImageCel(Sexy::IMAGE_ACHIEVEMENTS_PORTRAITS, aXPos, aYPos, i);
+                TodDrawString(g, aAchievementName, aTextRect.mX, aYPos + 23, Sexy::FONT_DWARVENTODCRAFT24, Color(255, 200, 0, 255), DS_ALIGN_LEFT);
+                TodDrawStringWrapped(g, aAchievementDesc, aTextRect, Sexy::FONT_DWARVENTODCRAFT12, Color(255, 255, 255), DS_ALIGN_LEFT);
+                aMaxScroll += aOffset;
             }
         }
-        mMaxScrollPosition = max(0, maxScroll - cAchievementClipRect.mHeight - 5);
+        mMaxScrollPosition = max(0, aMaxScroll - cAchievementClipRect.mHeight - 5);
         g->ClearClipRect();
         mSlider->SliderDraw(g);
     }

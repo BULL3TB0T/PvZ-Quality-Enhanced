@@ -63,7 +63,7 @@ public:
 	float						mDescriptionScroll;
 	float						mDescriptionMaxScroll;
 	float						mDescriptionOffsetScroll;
-	float						mDescriptionOffsetY;
+	float						mDescriptionYOffset;
 	bool						mDescriptionOverfill;
 	Rect						mDescriptionRect;
 	Rect						mDescriptionSliderRect;

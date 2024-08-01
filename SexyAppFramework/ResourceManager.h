@@ -29,7 +29,7 @@ typedef std::map<SexyString, SexyString>	XMLParamMap;
 ///////////////////////////////////////////////////////////////////////////////
 class ResourceManager
 {
-protected:
+public:
 	enum ResType
 	{
 		ResType_Image,
@@ -51,6 +51,12 @@ protected:
 		virtual void DeleteResource() { }
 	};
 
+	std::set<std::string, StringLessNoCase> mLoadedGroups;
+
+	typedef std::map<std::string, BaseRes*> ResMap;
+	std::map<std::string, ResMap> mResourcePackImageMaps;
+
+protected:
 	struct ImageRes : public BaseRes
 	{
 		SharedImageRef mImage;
@@ -69,8 +75,9 @@ protected:
 		int mTotal;
 		DWORD mAlphaColor;
 		AnimInfo mAnimInfo;
+		bool mInResourcePack;
 
-		ImageRes() { mType = ResType_Image; }
+		ImageRes() { mType = ResType_Image; mInResourcePack = false; }
 		virtual void DeleteResource();
 	};
 
@@ -104,11 +111,8 @@ protected:
 		virtual void DeleteResource();
 	};
 
-	typedef std::map<std::string,BaseRes*> ResMap;
 	typedef std::list<BaseRes*> ResList;
 	typedef std::map<std::string,ResList,StringLessNoCase> ResGroupMap;
-
-	std::set<std::string,StringLessNoCase> mLoadedGroups;
 
 	ResMap					mImageMap;
 	ResMap					mSoundMap;
@@ -128,7 +132,7 @@ protected:
 	ResGroupMap				mResGroupMap;
 	ResList*				mCurResGroupList;
 	ResList::iterator		mCurResGroupListItr;
-
+	std::string				mCurResourcePack;
 
 	bool					Fail(const std::string& theErrorText);
 
@@ -155,8 +159,9 @@ public:
 	ResourceManager(SexyAppBase *theApp);
 	virtual ~ResourceManager();
 
-	bool					ParseResourcesFile(const std::string& theFilename);
+	bool					ParseResourcesFile(const std::string& theFilename, bool theOnlyResourcePacks = false);
 	bool					ReparseResourcesFile(const std::string& theFilename);
+	bool					DoParseResourcesFile(const std::string& theFilename);
 
 	std::string				GetErrorText();
 	bool					HadError();

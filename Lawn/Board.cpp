@@ -191,7 +191,7 @@ Board::Board(LawnApp* theApp)
 	{
 		mMenuButton->mLabel = _S("[MENU_BUTTON]");
 		mMenuButton->Resize(681, -10, 117, 46);
-		mFastButton->mBtnNoDraw = false;
+		mFastButton->mBtnNoDraw = true;
 	}
 
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND)
@@ -207,6 +207,7 @@ Board::Board(LawnApp* theApp)
 	{
 		mMenuButton->mLabel = _S("[MAIN_MENU_BUTTON]");
 		mMenuButton->Resize(628, -10, 163, 46);
+		mMenuButton->mBtnNoDraw = true;
 
 		mStoreButton = new GameButton(1);
 		mStoreButton->mDrawStoneButton = true;
@@ -1275,17 +1276,12 @@ Rect Board::GetShovelButtonRect()
 
 void Board::GetZenButtonRect(GameObjectType theObjectType, Rect& theRect)
 {
-	// Rect aRect = GetShovelButtonRect();
-	// Rect aButtonRect = GetShovelButtonRect();
-	// GetZenButtonRect(xxx, aButtonRect);
-
 	if (mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM)
 	{
 		if (theObjectType == GameObjectType::OBJECT_TYPE_NEXT_GARDEN)
 		{
 			theRect.mX = 30;
 		}
-		//return theRect;
 	}
 
 	theRect.mX = 30;
@@ -1319,10 +1315,7 @@ void Board::InitLevel()
 	mSodPosition = 0;
 	mPrevBoardResult = mApp->mBoardResult;
 	if (mApp->mPlayingQuickplay)
-	{
-		mApp->mGameMode = GameMode::GAMEMODE_ADVENTURE;
 		mLevel = mApp->mQuickLevel;
-	}
 	else
 		mLevel = mApp->IsAdventureMode() ? mApp->mPlayerInfo->mLevel : 0;
 	GameMode aGameMode = mApp->mGameMode;
@@ -1594,7 +1587,7 @@ void Board::InitLawnMowers()
 	{
 		if (aGameMode == GameMode::GAMEMODE_CHALLENGE_RESODDED && aRow >= 5)
 			continue;
-		if ((!mApp->IsScaryPotterLevel() || (mApp->IsAdventureMode() && (mLevel == 35 || mApp->mQuickLevel == 35))) && (aGameMode == GameMode::GAMEMODE_CHALLENGE_RESODDED || mPlantRow[aRow] != PlantRowType::PLANTROW_DIRT))
+		if ((!mApp->IsScaryPotterLevel() || (mApp->IsAdventureMode() && mLevel == 35)) && (aGameMode == GameMode::GAMEMODE_CHALLENGE_RESODDED || mPlantRow[aRow] != PlantRowType::PLANTROW_DIRT)) 
 		{
 			LawnMower* aLawnMower = mLawnMowers.DataArrayAlloc();
 			aLawnMower->LawnMowerInitialize(aRow);
@@ -1723,7 +1716,7 @@ void Board::UpdateLevelEndSequence()
 	mBoardFadeOutCounter--;
 	if (mBoardFadeOutCounter == 0)
 	{
-		if (mApp->mPlayingQuickplay && mApp->mQuickLevel != FINAL_LEVEL)
+		if (mApp->mPlayingQuickplay && mLevel != FINAL_LEVEL)
 		{
 			LawnDialog* aDialog = (LawnDialog*)mApp->DoDialog(DIALOG_MESSAGE, true, _S("[QUICK_PLAY_HEADER]"), _S("[QUICK_PLAY]"), "", Dialog::BUTTONS_YES_NO);
 			if (aDialog->WaitForResult(true) == Dialog::ID_YES)
@@ -1770,7 +1763,6 @@ void Board::UpdateLevelEndSequence()
 		}
 	}
 }
-
 
 void Board::CompleteEndLevelSequenceForSaving()
 {
@@ -1909,7 +1901,7 @@ void Board::FadeOutLevel()
 			mIceTimer[aRow] = mNextSurvivalStageCounter;
 		}
 	}
-	mApp->isFastMode = false;
+	mApp->mIsFastMode = false;
 	mApp->SetCursor(CURSOR_POINTER);
 }
 
@@ -3114,8 +3106,8 @@ void Board::UpdateMousePosition()
 
 	if (aCursorSeedType == SeedType::SEED_INSTANT_COFFEE)
 	{
-		int aGridX = PlantingPixelToGridX(mApp->mWidgetManager->mLastMouseX, mApp->mWidgetManager->mLastMouseY, aCursorSeedType);
-		int aGridY = PlantingPixelToGridY(mApp->mWidgetManager->mLastMouseX, mApp->mWidgetManager->mLastMouseY, aCursorSeedType);
+		int aGridX = PlantingPixelToGridX(aMouseX, aMouseY, aCursorSeedType);
+		int aGridY = PlantingPixelToGridY(aMouseX, aMouseY, aCursorSeedType);
 
 		Plant* aPlant = GetTopPlantAt(aGridX, aGridY, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION);
 		if (aPlant && aPlant->mIsAsleep && CanPlantAt(aGridX, aGridY, SeedType::SEED_INSTANT_COFFEE) == PlantingReason::PLANTING_OK)
@@ -3125,8 +3117,8 @@ void Board::UpdateMousePosition()
 	}
 	else if (aCursorSeedType == SeedType::SEED_WALLNUT || aCursorSeedType == SeedType::SEED_TALLNUT)
 	{
-		int aGridX = PlantingPixelToGridX(mApp->mWidgetManager->mLastMouseX, mApp->mWidgetManager->mLastMouseY, aCursorSeedType);
-		int aGridY = PlantingPixelToGridY(mApp->mWidgetManager->mLastMouseX, mApp->mWidgetManager->mLastMouseY, aCursorSeedType);
+		int aGridX = PlantingPixelToGridX(aMouseX, aMouseY, aCursorSeedType);
+		int aGridY = PlantingPixelToGridY(aMouseX, aMouseY, aCursorSeedType);
 
 		Plant* aPlant = GetTopPlantAt(aGridX, aGridY, PlantPriority::TOPPLANT_ONLY_PUMPKIN);
 		if (aPlant && aPlant->mSeedType == aCursorSeedType && CanPlantAt(aGridX, aGridY, aCursorSeedType) == PlantingReason::PLANTING_OK)
@@ -3136,8 +3128,8 @@ void Board::UpdateMousePosition()
 	}
 	else if (aCursorSeedType == SeedType::SEED_PUMPKINSHELL)
 	{
-		int aGridX = PlantingPixelToGridX(mApp->mWidgetManager->mLastMouseX, mApp->mWidgetManager->mLastMouseY, aCursorSeedType);
-		int aGridY = PlantingPixelToGridY(mApp->mWidgetManager->mLastMouseX, mApp->mWidgetManager->mLastMouseY, aCursorSeedType);
+		int aGridX = PlantingPixelToGridX(aMouseX, aMouseY, aCursorSeedType);
+		int aGridY = PlantingPixelToGridY(aMouseX, aMouseY, aCursorSeedType);
 
 		Plant* aPlant = GetTopPlantAt(aGridX, aGridY, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION);
 		if (aPlant && aPlant->mSeedType == SeedType::SEED_PUMPKINSHELL && CanPlantAt(aGridX, aGridY, SeedType::SEED_PUMPKINSHELL) == PlantingReason::PLANTING_OK)
@@ -3155,8 +3147,8 @@ void Board::UpdateToolTip()
 		return;
 	}
 
-	int aMouseX = mWidgetManager->mLastMouseX - mX;
-	int aMouseY = mWidgetManager->mLastMouseY - mY;
+	int aMouseX = mApp->mWidgetManager->mLastMouseX - mX;
+	int aMouseY = mApp->mWidgetManager->mLastMouseY - mY;
 
 	if (!CanInteractWithBoardButtons())
 	{
@@ -4508,7 +4500,7 @@ void Board::MouseUp(int x, int y, int theClickCount)
 			mFastButton->mIsOver = false;
 			mFastButton->mIsDown = false;
 			UpdateCursor();
-			mApp->isFastMode = !mApp->isFastMode;
+			mApp->mIsFastMode = !mApp->mIsFastMode;
 		}
 		else if(mStoreButton && mStoreButton->IsMouseOver())
 		{
@@ -4944,7 +4936,7 @@ void Board::PuzzleSaveStreak()
 
 void Board::ZombiesWon(Zombie* theZombie)
 {
-	mApp->isFastMode = false;
+	mApp->mIsFastMode = false;
 	if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON)
 		return;
 
@@ -5586,14 +5578,14 @@ void Board::Update()
 	Widget::Update();
 	MarkDirty();
 
-	if (mPaused && mApp->isFastMode)
-		mApp->isFastMode = false;
+	if (mPaused && mApp->mIsFastMode)
+		mApp->mIsFastMode = false;
 
 	if (mFastButton != nullptr && !mFastButton->mBtnNoDraw)
 	{
-		mFastButton->mButtonImage = !mApp->isFastMode ? IMAGE_FASTBUTTON : IMAGE_FASTBUTTON_HIGHLIGHT;
-		mFastButton->mOverImage = !mApp->isFastMode ? IMAGE_FASTBUTTON : IMAGE_FASTBUTTON_HIGHLIGHT;
-		mFastButton->mDownImage = !mApp->isFastMode ? IMAGE_FASTBUTTON_HIGHLIGHT : IMAGE_FASTBUTTON;
+		mFastButton->mButtonImage = !mApp->mIsFastMode ? IMAGE_FASTBUTTON : IMAGE_FASTBUTTON_HIGHLIGHT;
+		mFastButton->mOverImage = !mApp->mIsFastMode ? IMAGE_FASTBUTTON : IMAGE_FASTBUTTON_HIGHLIGHT;
+		mFastButton->mDownImage = !mApp->mIsFastMode ? IMAGE_FASTBUTTON_HIGHLIGHT : IMAGE_FASTBUTTON;
 	}
 
 	SexyString aDetails;
@@ -5622,7 +5614,7 @@ void Board::Update()
 		aState = _S("[DISCORD_BOARD_PLAYING]");
 	mApp->UpdateDiscordState(aState);
 
-	if(mSunMoney >= 8000 && !mApp->mPlayingQuickplay)
+	if (mSunMoney >= 8000 && !mApp->mPlayingQuickplay)
 		mApp->GetAchievement(ACHIEVEMENT_SUNNY_DAYS);
 
 	mCutScene->Update();
@@ -5654,7 +5646,8 @@ void Board::Update()
 	{
 		mFastButton->mDisabled = aDisabled;
 	}
-	mFastButton->Update();
+	if (HAS_FAST_FORWARD_BUTTON)
+		mFastButton->Update();
 	if (mStoreButton)
 	{
 		mStoreButton->mDisabled = aDisabled;
@@ -5703,7 +5696,7 @@ void Board::Update()
 	mEffectCounter++;
 	if (StageHasPool() && !mIceTrapCounter && mApp->mGameScene != GameScenes::SCENE_ZOMBIES_WON && !mCutScene->IsSurvivalRepick())
 	{
-		mApp->mPoolEffect->mPoolCounter++;
+		mApp->mPoolEffect->PoolEffectUpdate();
 	}
 	if (mBackground == BackgroundType::BACKGROUND_3_POOL && mPoolSparklyParticleID == ParticleSystemID::PARTICLESYSTEMID_NULL && mDrawCount > 0)
 	{
@@ -6177,15 +6170,11 @@ void Board::DrawGameObjects(Graphics* g)
 	}
 	{
 		int aZPos;
-		if (mTimeStopCounter > 0 || (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && mCutScene->IsPanningLeft()))
+		if (mTimeStopCounter > 0 || (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && mCutScene->IsPanningLeft() && mTutorialState == TutorialState::TUTORIAL_OFF))
 		{
 			aZPos = MakeRenderOrder(RenderLayer::RENDER_LAYER_ABOVE_UI, 0, 0);
 		}
-		else if (mApp->mGameScene == GameScenes::SCENE_PLAYING || mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON)
-		{
-			aZPos = MakeRenderOrder(RenderLayer::RENDER_LAYER_UI_BOTTOM, 0, 1);
-		}
-		else if (mCutScene->IsAfterSeedChooser() || mCutScene->IsInShovelTutorial() || mHelpIndex == AdviceType::ADVICE_CLICK_TO_CONTINUE)
+		else if (mApp->mGameScene == GameScenes::SCENE_PLAYING || mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON || mCutScene->IsAfterSeedChooser() || mCutScene->IsInShovelTutorial() || mHelpIndex == AdviceType::ADVICE_CLICK_TO_CONTINUE)
 		{
 			aZPos = MakeRenderOrder(RenderLayer::RENDER_LAYER_UI_BOTTOM, 0, 1);
 		}
@@ -6504,6 +6493,7 @@ void Board::DrawGameObjects(Graphics* g)
 			}
 			break;
 		}
+
 		default:
 			TOD_ASSERT();
 			break;
@@ -6881,6 +6871,7 @@ void Board::DrawShovel(Graphics* g)
 	{
 		if (mChallenge->mChallengeState == (ChallengeState)15)
 		{
+			//scrapped idea prob
 			g->SetColorizeImages(true);
 			g->SetColor(GetFlashingColor(mMainCounter, 75));
 		}
@@ -7191,11 +7182,11 @@ void Board::DrawUIBottom(Graphics* g)
 	{
 		int aWaveTime = abs(mMainCounter / 8 % 22 - 11);
 		g->SetDrawMode(Graphics::DRAWMODE_ADDITIVE);
-		g->DrawImageCel(Sexy::IMAGE_WAVESIDE, 0, 40, aWaveTime);
-		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 160, 40, aWaveTime);
-		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 320, 40, aWaveTime);
-		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 480, 40, aWaveTime);
-		TodDrawImageCelScaled(g, Sexy::IMAGE_WAVESIDE, 800, 40, 0, aWaveTime, -1.0f, 1.0f);
+		int aOffset = -80;
+		int aWidth = 160;
+		int aWaves = BOARD_WIDTH / aWidth;
+		for (int i = 0; i <= aWaves; i++)
+			TodDrawImageCelScaled(g, i == 0 || i == aWaves ? Sexy::IMAGE_WAVESIDE : Sexy::IMAGE_WAVECENTER, i * aWidth + aOffset + (i == aWaves ? aWidth : 0), 40, 0, aWaveTime, i == aWaves ? -1.0f : 1.0f, 1.0f);
 		g->SetDrawMode(Graphics::DRAWMODE_NORMAL);
 	}
 
@@ -7412,13 +7403,20 @@ bool Board::IsScaryPotterDaveTalking()
 
 void Board::DrawUITop(Graphics* g)
 {
+	if ((mApp->mGameMode == GameMode::GAMEMODE_UPSELL || mApp->mGameMode == GameMode::GAMEMODE_INTRO) && mCutScene->mUpsellHideBoard)
+	{
+		g->SetColor(Color(0, 0, 0));
+		g->FillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
+	}
+
 	if (StageHasFog())
 	{
 		DrawTopRightUI(g);
 	}
 
 	mMenuButton->Draw(g);
-	mFastButton->Draw(g);
+	if (HAS_FAST_FORWARD_BUTTON)
+		mFastButton->Draw(g);
 
 	if (mTimeStopCounter > 0)
 	{
@@ -7436,12 +7434,6 @@ void Board::DrawUITop(Graphics* g)
 		mStoreButton->Draw(g);
 	}
 
-	if ((mApp->mGameMode == GameMode::GAMEMODE_UPSELL || mApp->mGameMode == GameMode::GAMEMODE_INTRO) && mCutScene->mUpsellHideBoard)
-	{
-		g->SetColor(Color(0, 0, 0));
-		g->FillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-	}
-
 	if (mApp->mGameMode == GameMode::GAMEMODE_UPSELL)
 	{
 		mCutScene->DrawUpsell(g);
@@ -7451,10 +7443,10 @@ void Board::DrawUITop(Graphics* g)
 		mCutScene->DrawIntro(g);
 	}
 
-	if (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO || 
+	if (mApp->mGameMode != GameMode::GAMEMODE_UPSELL && (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO ||
 		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN ||
-		mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM || 
-		IsScaryPotterDaveTalking())
+		mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM ||
+		IsScaryPotterDaveTalking()))
 	{
 		Graphics aScreenSpace(*g);
 		aScreenSpace.mTransX -= mX;
@@ -7699,12 +7691,13 @@ void Board::KeyDown(KeyCode theKey)
 	}
 	else if (theKey == KeyCode::KEYCODE_ESCAPE)
 	{
-		if (mCursorObject->mCursorType != CursorType::CURSOR_TYPE_NORMAL)
+		if (mCursorObject->mCursorType != CursorType::CURSOR_TYPE_NORMAL && mCursorObject->mCursorType != CursorType::CURSOR_TYPE_HAMMER)
 		{
 			RefreshSeedPacketFromCursor();
 		}
 		else if (CanInteractWithBoardButtons() && mApp->mGameScene != GameScenes::SCENE_ZOMBIES_WON)
 		{
+			mApp->SetCursor(CURSOR_POINTER);
 			mApp->DoNewOptions(false);
 		}
 	}
@@ -7717,8 +7710,8 @@ static void TodCrash()
 
 void Board::KeyChar(SexyChar theChar)
 {
-	bool canUseKeybinds = mApp->mBankKeybinds && (!mPaused || mApp->mGameScene == GameScenes::SCENE_PLAYING || mApp->mCrazyDaveReanimID != ReanimationID::REANIMATIONID_NULL);
-	if (isdigit(theChar) && canUseKeybinds && mSeedBank->mY >= 0)
+	bool aCanUseKeybinds = mApp->mBankKeybinds && (!mPaused || mApp->mGameScene == GameScenes::SCENE_PLAYING || mApp->mCrazyDaveState != CrazyDaveState::CRAZY_DAVE_OFF);
+	if (isdigit(theChar) && aCanUseKeybinds && mSeedBank->mY >= 0)
 	{
 		for (int i = 0; i < mSeedBank->mNumPackets; i++)
 		{
@@ -7756,7 +7749,7 @@ void Board::KeyChar(SexyChar theChar)
 			}
 		}
 	}
-	else if (tolower(theChar) == _S('s') && canUseKeybinds && mShowShovel)
+	else if (tolower(theChar) == _S('s') && aCanUseKeybinds && mShowShovel)
 	{
 		if (mCursorObject->mCursorType != CursorType::CURSOR_TYPE_SHOVEL)
 		{
@@ -7775,6 +7768,12 @@ void Board::KeyChar(SexyChar theChar)
 		return;
 
 	TodTraceAndLog("Board cheat key '%c'", theChar);
+
+	if (theChar == _S('e'))
+	{
+		for (int i = 0; i < NUM_ACHIEVEMENTS; i++)
+			mApp->GetAchievement((AchievementType)i);
+	}
 
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN)
 	{
@@ -8506,7 +8505,7 @@ void Board::KeyChar(SexyChar theChar)
 	}
 	if (theChar == _S('%'))
 	{
-		mApp->SwitchScreenMode(mApp->mIsWindowed, !mApp->Is3dAccel(), false);
+		mApp->SwitchScreenMode(mApp->mIsWindowed, !mApp->Is3DAccelerated(), false);
 	}
 	if (theChar == _S('M'))
 	{
@@ -8514,7 +8513,7 @@ void Board::KeyChar(SexyChar theChar)
 		return;
 	}
 
-	if (theChar == _S('\3') && mApp->mTodCheatKeys)
+	if (theChar == _S('\3') && mApp->mCtrlDown && mApp->mTodCheatKeys)
 	{
 		TodCrash();
 
@@ -9805,15 +9804,3 @@ void Board::DrawHealthbar(Graphics* g, Rect rect, Color maxColor, int maxNumber,
 	}
 	g->SetColor(lastColor);
 }
-
-
-
-
-
-
-
-
-
-
-
-

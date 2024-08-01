@@ -1,7 +1,5 @@
 #pragma once
 
-#include <wtypes.h>
-#include "ConstEnums.h"
 constexpr const double PI = 3.141592653589793;
 
 const int			BOARD_WIDTH = 800;
@@ -21,6 +19,8 @@ const int           SEED_BANK_OFFSET_X_END = 10;
 const int           SEED_CHOOSER_OFFSET_Y = 516;
 const int           SEED_PACKET_WIDTH = 50;
 const int           SEED_PACKET_HEIGHT = 70;
+const int			IMITATER_POS_X = 459;
+const int			IMITATER_POS_Y = 503;
 const int           IMITATER_DIALOG_WIDTH = 500;
 const int           IMITATER_DIALOG_HEIGHT = 600;
 
@@ -53,5 +53,19 @@ const int           STORESCREEN_COINBANK_Y = 559;
 const int           STORESCREEN_PAGESTRING_X = 470;
 const int           STORESCREEN_PAGESTRING_Y = 500;
 
+const int			ADVANCEDOPTIONS_MAX_PAGES = 4;
+const int			ADVANCEDOPTIONS_PAGE_Y = 355;
+const int			ADVANCEDOPTIONS_SPEED_X = 284;
+const int			ADVANCEDOPTIONS_SPEED_Y = 128;
+
 const int			SPEED_MODIFIER_MIN = 2;
 const int			SPEED_MODIFIER_MAX = 9;
+
+////////////////////////////////////////////////////////////
+///						QOTL VARIABLES					 ///
+////////////////////////////////////////////////////////////
+
+const bool			HAS_QUICKPLAY = true;
+const bool			HAS_ACHIEVEMENTS = true;
+const bool			HAS_PAGE_SELECTOR = true;
+const bool			HAS_FAST_FORWARD_BUTTON = true;

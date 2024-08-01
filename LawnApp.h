@@ -131,7 +131,7 @@ public:
 	bool							mDebugTrialLocked;								
 	bool							mMuteSoundsForCutscene;							
 	Achievements*					mAchievements;
-	bool							isFastMode;
+	bool							mIsFastMode;
 	SexyString						mVersion;
 	SexyString						mReconVersion;
 	SexyString						mGitCommit;

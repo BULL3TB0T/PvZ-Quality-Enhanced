@@ -46,7 +46,7 @@ public:
     const float					mScrollAccel = 0.1f;
     float						mMaxScrollPosition;
     Sexy::Slider*               mSlider;
-    int                         mButtonStartYOffset;
+    int                         mButtonYStartOffset;
     int                         mButtonYOffset;
 
 public:

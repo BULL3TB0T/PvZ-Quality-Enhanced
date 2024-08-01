@@ -170,6 +170,9 @@ bool ResourceManager::ParseCommonResource(XMLElement &theElement, BaseRes *theRe
 {
 	mHadAlreadyDefinedError = false;
 
+	if (theRes->mType == ResType::ResType_Image && !mCurResourcePack.empty())
+		((ImageRes*)theRes)->mInResourcePack = true;
+
 	const SexyString &aPath = theElement.mAttributes[_S("path")];
 	if (aPath.empty())
 		return Fail("No path specified.");
@@ -211,6 +214,8 @@ bool ResourceManager::ParseCommonResource(XMLElement &theElement, BaseRes *theRe
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::ParseSoundResource(XMLElement &theElement)
 {
+	if (!mCurResourcePack.empty())
+		return true;
 	SoundRes *aRes = new SoundRes;
 	aRes->mSoundId = -1;
 	aRes->mVolume = -1;
@@ -271,7 +276,7 @@ static void ReadIntVector(const SexyString &theVal, std::vector<int> &theVector)
 bool ResourceManager::ParseImageResource(XMLElement &theElement)
 {
 	ImageRes *aRes = new ImageRes;
-	if (!ParseCommonResource(theElement, aRes, mImageMap))
+	if (!ParseCommonResource(theElement, aRes, mCurResourcePack.empty() ? mImageMap : mResourcePackImageMaps[mCurResourcePack]))
 	{
 		if (mHadAlreadyDefinedError && mAllowAlreadyDefinedResources)
 		{
@@ -381,6 +386,8 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement)
 		aRes->mAnimInfo.Compute(aNumCels,aBeginDelay,anEndDelay);
 	}
 
+	if (aRes->mInResourcePack && mApp->GetImage(aRes->mPath) != nullptr)
+		DoLoadImage(aRes);
 
 	return true;
 }
@@ -389,6 +396,8 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement)
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::ParseFontResource(XMLElement &theElement)
 {
+	if (!mCurResourcePack.empty())
+		return true;
 	FontRes *aRes = new FontRes;
 	aRes->mFont = NULL;
 	aRes->mImage = NULL;
@@ -454,6 +463,8 @@ bool ResourceManager::ParseSetDefaults(XMLElement &theElement)
 	anItr = theElement.mAttributes.find(_S("path"));
 	if (anItr != theElement.mAttributes.end())
 		mDefaultPath = RemoveTrailingSlash(SexyStringToStringFast(anItr->second)) + '/';
+	if (!mCurResourcePack.empty())
+		mDefaultPath = mApp->mResourcePackPath + "/" + mCurResourcePack + "/" + mDefaultPath;
 
 	anItr = theElement.mAttributes.find(_S("idprefix"));
 	if (anItr != theElement.mAttributes.end())
@@ -589,7 +600,67 @@ bool ResourceManager::DoParseResources()
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::ParseResourcesFile(const std::string& theFilename)
+bool ResourceManager::ParseResourcesFile(const std::string& theFilename, bool theOnlyResourcePacks)
+{
+	mCurResourcePack = "";
+	if (!theOnlyResourcePacks ? DoParseResourcesFile(theFilename) : theOnlyResourcePacks)
+	{
+		bool aResetResourcePack = true;
+		int aResourcePackIndex = mApp->mResourcePackIndex;
+		mApp->mResourcePackIndex = -1;
+		for (std::map<std::string, ResourceManager::ResMap>::iterator aIt = mApp->mResourceManager->mResourcePackImageMaps.begin(); aIt != mApp->mResourceManager->mResourcePackImageMaps.end(); ++aIt)
+			DeleteMap(aIt->second);
+		mResourcePackImageMaps.clear();
+		WIN32_FIND_DATA aFindFileData;
+		HANDLE aFind = FindFirstFile((mApp->mResourcePackPath + "/*").c_str(), &aFindFileData);
+		if (aFind != INVALID_HANDLE_VALUE)
+		{
+			do
+			{
+				std::string aFolderName = aFindFileData.cFileName;
+				if (aFolderName == "." || aFolderName == "..")
+					continue;
+				mCurResourcePack = aFolderName;
+				mResourcePackImageMaps[mCurResourcePack] = ResMap();
+				if (!DoParseResourcesFile(theFilename))
+					return false;
+			} while (FindNextFile(aFind, &aFindFileData) != 0);
+			FindClose(aFind);
+			for (std::map<std::string, ResourceManager::ResMap>::iterator aIt = mApp->mResourceManager->mResourcePackImageMaps.begin(); aIt != mApp->mResourceManager->mResourcePackImageMaps.end(); ++aIt)
+			{
+				if (mApp->mResourcePack == aIt->first)
+				{
+					aResetResourcePack = false;
+					break;
+				}
+			}
+			if (aResetResourcePack)
+			{
+				mApp->mResourcePack = "";
+				mApp->mResourcePackIndex = -1;
+			}
+			else
+				mApp->mResourcePackIndex = aResourcePackIndex;
+		}
+	}
+	return !mHasFailed;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+bool ResourceManager::ReparseResourcesFile(const std::string& theFilename)
+{
+	bool oldDefined = mAllowAlreadyDefinedResources;
+	mAllowAlreadyDefinedResources = true;
+
+	bool aResult = ParseResourcesFile(theFilename);
+
+	mAllowAlreadyDefinedResources = oldDefined;
+
+	return aResult;
+}
+
+bool ResourceManager::DoParseResourcesFile(const std::string& theFilename)
 {
 	mXMLParser = new XMLParser();
 	if (!mXMLParser->OpenFile(theFilename))
@@ -609,24 +680,10 @@ bool ResourceManager::ParseResourcesFile(const std::string& theFilename)
 				return DoParseResources();
 		}
 	}
-		
+
 	Fail("Expecting ResourceManifest tag");
 
-	return DoParseResources();	
-}
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::ReparseResourcesFile(const std::string& theFilename)
-{
-	bool oldDefined = mAllowAlreadyDefinedResources;
-	mAllowAlreadyDefinedResources = true;
-
-	bool aResult = ParseResourcesFile(theFilename);
-
-	mAllowAlreadyDefinedResources = oldDefined;
-
-	return aResult;
+	return DoParseResources();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -722,7 +779,7 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 
 	bool isNew;
 	ImageLib::gAlphaComposeColor = theRes->mAlphaColor;
-	SharedImageRef aSharedImageRef = gSexyAppBase->GetSharedImage(theRes->mPath, theRes->mVariant, &isNew);
+	SharedImageRef aSharedImageRef = gSexyAppBase->GetSharedImage(theRes->mPath, theRes->mVariant, &isNew, theRes->mInResourcePack);
 	ImageLib::gAlphaComposeColor = 0xFFFFFF;
 
 	DDImage* aDDImage = (DDImage*) aSharedImageRef;
@@ -977,7 +1034,7 @@ bool ResourceManager::LoadNextResource()
 			case ResType_Image: 
 			{
 				ImageRes *anImageRes = (ImageRes*)aRes;
-				if ((DDImage*)anImageRes->mImage!=NULL)
+				if (anImageRes->mInResourcePack || (DDImage*)anImageRes->mImage != NULL)
 					continue;
 
 				return DoLoadImage(anImageRes); 
@@ -1062,10 +1119,7 @@ bool ResourceManager::LoadResources(const std::string &theGroup)
 	mError = "";
 	mHasFailed = false;
 	StartLoadResources(theGroup);
-	while (LoadNextResource())
-	{
-	}
-
+	while (LoadNextResource());
 	if (!HadError())
 	{
 		mLoadedGroups.insert(theGroup);
@@ -1158,17 +1212,27 @@ Font* ResourceManager::GetFont(const std::string &theId)
 ///////////////////////////////////////////////////////////////////////////////
 SharedImageRef ResourceManager::GetImageThrow(const std::string &theId)
 {
-	ResMap::iterator anItr = mImageMap.find(theId);
-	if (anItr != mImageMap.end())
+	ResMap aImageMap = mApp->mResourcePackIndex == -1 ? mImageMap : mResourcePackImageMaps[mApp->mResourcePack];
+	ResMap::iterator anItr = aImageMap.find(theId);
+	if (anItr != aImageMap.end())
 	{
 		ImageRes *aRes = (ImageRes*)anItr->second;
-		if ((MemoryImage*) aRes->mImage != NULL)
+		MemoryImage* aImage = aRes->mImage;
+		if (mApp->mResourcePackIndex != -1 && aImage == NULL)
+		{
+			anItr = mImageMap.find(theId);
+			if (anItr != mImageMap.end())
+			{
+				aRes = (ImageRes*)anItr->second;
+				aImage = aRes->mImage;
+			}
+		}
+		if (aImage != NULL)
 			return aRes->mImage;
 
 		if (mAllowMissingProgramResources && aRes->mFromProgram)
 			return NULL;
 	}
-
 
 	Fail(StrFormat("Image resource not found: %s",theId.c_str()));
 	throw ResourceManagerException(GetErrorText());
@@ -1188,7 +1252,6 @@ int	ResourceManager::GetSoundThrow(const std::string &theId)
 		if (mAllowMissingProgramResources && aRes->mFromProgram)
 			return -1;
 	}
-
 
 	Fail(StrFormat("Sound resource not found: %s",theId.c_str()));
 	throw ResourceManagerException(GetErrorText());		

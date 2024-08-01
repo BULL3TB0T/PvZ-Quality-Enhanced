@@ -22,6 +22,7 @@
 #include "../../SexyAppFramework/Slider.h"
 
 const Rect cSeedClipRect = Rect(0, 123, BOARD_WIDTH, 420);
+const int cSeedPacketYOffset = 0;
 const int cSeedPacketRows = 8;
 
 SeedChooserScreen::SeedChooserScreen()
@@ -172,7 +173,7 @@ SeedChooserScreen::SeedChooserScreen()
 		aStarFruit.mSeedIndexInBank = 0;
 		mSeedsInBank++;
 	}
-	if ((mApp->mCrazySeeds && mApp->mPlayingQuickplay) || (mApp->IsAdventureMode() && !mApp->IsFirstTimeAdventureMode() && !mApp->mPlayingQuickplay))
+	if ((mApp->mCrazySeeds && mApp->mPlayingQuickplay) || (mApp->IsAdventureMode() && !mApp->IsFirstTimeAdventureMode()))
 		CrazyDavePickSeeds();
 
 	mSlider = new Sexy::Slider(IMAGE_OPTIONS_SLIDERSLOT_PLANT, IMAGE_OPTIONS_SLIDERKNOB_PLANT, 0, this);
@@ -181,8 +182,6 @@ SeedChooserScreen::SeedChooserScreen()
 	mSlider->mThumbOffsetX = -14;
 	mSlider->mNoDraw = true;
 	ResizeSlider();
-
-	mPreviousType = FindSeedInBank(mSeedsInBank - 1);
 }
 
 int SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(TodWeightedArray* theArray, int theCount, MTRand& theLevelRNG)
@@ -266,13 +265,13 @@ void SeedChooserScreen::GetSeedPositionInChooser(int theIndex, int& x, int& y)
 {
 	if (theIndex == SEED_IMITATER)
 	{
-		x = 464;
-		y = 515;
+		x = IMITATER_POS_X + 5;
+		y = IMITATER_POS_Y + 12;
 	}
 	else
 	{
 		x = theIndex % cSeedPacketRows * 53 + 22;
-		y = theIndex / cSeedPacketRows * SEED_PACKET_HEIGHT + (SEED_PACKET_HEIGHT + 53) - mScrollPosition;
+		y = theIndex / cSeedPacketRows * (SEED_PACKET_HEIGHT + cSeedPacketYOffset) + (SEED_PACKET_HEIGHT + 53) - mScrollPosition;
 	}
 }
 
@@ -340,11 +339,8 @@ void SeedChooserScreen::Draw(Graphics* g)
 		return;
 
 	g->DrawImage(Sexy::IMAGE_SEEDCHOOSER_BACKGROUND, 0, 87);
-
 	if (mApp->SeedTypeAvailable(SEED_IMITATER))
-	{
 		g->DrawImage(Sexy::IMAGE_SEEDCHOOSER_IMITATERADDON, IMITATER_POS_X, IMITATER_POS_Y);
-	}
 	TodDrawString(g, _S("[CHOOSE_YOUR_PLANTS]"), 229, 110, Sexy::FONT_DWARVENTODCRAFT18YELLOW, Color::White, DS_ALIGN_CENTER);
 	mSlider->SliderDraw(g);
 	for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER; aSeedType = (SeedType)(aSeedType + 1))
@@ -540,7 +536,7 @@ void SeedChooserScreen::Update()
 	mRandomButton->mBtnNoDraw = !mApp->mTodCheatKeys;
 	mRandomButton->mDisabled = !mApp->mTodCheatKeys;
 
-	mMaxScrollPosition = SEED_PACKET_HEIGHT * ((cSeedClipRect.mHeight % SEED_PACKET_HEIGHT == 0 ? 1 : 0) - (cSeedClipRect.mHeight / SEED_PACKET_HEIGHT) + ((NUM_SEEDS_IN_CHOOSER - 2) / cSeedPacketRows));
+	mMaxScrollPosition = max(0, (((NUM_SEEDS_IN_CHOOSER - 2) / cSeedPacketRows) * (SEED_PACKET_HEIGHT + cSeedPacketYOffset)) + SEED_PACKET_HEIGHT - cSeedClipRect.mHeight);
 	mSlider->mVisible = mMaxScrollPosition != 0;
 	if (mSlider->mVisible)
 	{
@@ -1201,7 +1197,7 @@ bool SeedChooserScreen::PickedPlantType(SeedType theSeedType)
 	for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER; aSeedType = (SeedType)(aSeedType + 1))
 	{
 		ChosenSeed& aChosenSeed = mChosenSeeds[aSeedType];
-		if (aChosenSeed.mSeedState == SEED_IN_BANK)
+		if (aChosenSeed.mSeedState == SEED_IN_BANK || aChosenSeed.mSeedState == SEED_FLYING_TO_BANK) 
 		{
 			if (aChosenSeed.mSeedType == theSeedType || (aChosenSeed.mSeedType == SEED_IMITATER && aChosenSeed.mImitaterType == theSeedType))
 			{

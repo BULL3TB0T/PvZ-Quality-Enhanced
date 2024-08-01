@@ -947,6 +947,9 @@
     <ClCompile Include="..\Lawn\Widget\ChallengePagesDialog.cpp">
       <Filter>Lawn\Widget\Widget Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Lawn\Widget\CursorWidget.cpp">
+      <Filter>Lawn\Widget\Widget Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h">
@@ -1627,6 +1630,9 @@
       <Filter>Lawn\Widget\Widget Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Lawn\Widget\ChallengePagesDialog.h">
+      <Filter>Lawn\Widget\Widget Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Lawn\Widget\CursorWidget.h">
       <Filter>Lawn\Widget\Widget Include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -133,6 +133,7 @@
     <ClCompile Include="..\Lawn\Widget\CheatDialog.cpp" />
     <ClCompile Include="..\Lawn\Widget\ContinueDialog.cpp" />
     <ClCompile Include="..\Lawn\Widget\CreditScreen.cpp" />
+    <ClCompile Include="..\Lawn\Widget\CursorWidget.cpp" />
     <ClCompile Include="..\Lawn\Widget\GameSelector.cpp" />
     <ClCompile Include="..\Lawn\Widget\MiniCreditsScreen.cpp" />
     <ClCompile Include="..\Lawn\Widget\NewOptionsDialog.cpp" />
@@ -700,6 +701,7 @@
     <ClInclude Include="..\Lawn\Widget\CheatDialog.h" />
     <ClInclude Include="..\Lawn\Widget\ContinueDialog.h" />
     <ClInclude Include="..\Lawn\Widget\CreditScreen.h" />
+    <ClInclude Include="..\Lawn\Widget\CursorWidget.h" />
     <ClInclude Include="..\Lawn\Widget\GameSelector.h" />
     <ClInclude Include="..\Lawn\Widget\MiniCreditsScreen.h" />
     <ClInclude Include="..\Lawn\Widget\NewOptionsDialog.h" />
