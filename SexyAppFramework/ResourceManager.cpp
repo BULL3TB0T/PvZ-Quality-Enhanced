@@ -641,6 +641,7 @@ bool ResourceManager::ParseResourcesFile(const std::string& theFilename, bool th
 			}
 			else
 				mApp->mResourcePackIndex = aResourcePackIndex;
+			mCurResourcePack = "";
 		}
 	}
 	return !mHasFailed;
