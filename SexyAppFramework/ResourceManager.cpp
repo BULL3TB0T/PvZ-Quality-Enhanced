@@ -170,8 +170,9 @@ bool ResourceManager::ParseCommonResource(XMLElement &theElement, BaseRes *theRe
 {
 	mHadAlreadyDefinedError = false;
 
-	if (theRes->mType == ResType::ResType_Image && !mCurResourcePack.empty())
-		((ImageRes*)theRes)->mInResourcePack = true;
+	bool aIsInResourcePack = theRes->mType == ResType::ResType_Image && !mCurResourcePack.empty();
+	if (aIsInResourcePack)
+		((ImageRes*)theRes)->mInResourcePack = aIsInResourcePack;
 
 	const SexyString &aPath = theElement.mAttributes[_S("path")];
 	if (aPath.empty())
@@ -206,7 +207,8 @@ bool ResourceManager::ParseCommonResource(XMLElement &theElement, BaseRes *theRe
 		return Fail("Resource already defined.");
 	}
 
-	mCurResGroupList->push_back(theRes);
+	if (!aIsInResourcePack)
+		mCurResGroupList->push_back(theRes);
 	return true;
 }
 
