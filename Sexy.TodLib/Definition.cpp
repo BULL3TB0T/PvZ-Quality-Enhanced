@@ -562,7 +562,7 @@ bool DefinitionIsCompiled(const SexyString& theXMLFilePath)
     
     if (!GetFileAttributesEx(theXMLFilePath.c_str(), _GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &lpFileData))
     {
-        TodTrace(_S("Can't file source file to compile '%s'"), theXMLFilePath);
+        TodTrace(_S("Can't find source file to compile '%s'"), theXMLFilePath.c_str());
         return true;
     }
     else
