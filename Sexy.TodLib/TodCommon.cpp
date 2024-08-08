@@ -1051,19 +1051,29 @@ bool TodResourceManager::TodLoadResources(const std::string& theGroup)
 	return true;
 }
 
-void TodAddImageToMap(SharedImageRef* theImage, const std::string& thePath)
+void TodAddImageToMap(SharedImageRef* theImage, const std::string& thePath, std::string theResourcePack)
 { 
-	((TodResourceManager*)gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
+	((TodResourceManager*)gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath, theResourcePack);
 }
 
-void TodResourceManager::AddImageToMap(SharedImageRef* theImage, const std::string& thePath)
+void TodResourceManager::AddImageToMap(SharedImageRef* theImage, const std::string& thePath, std::string theResourcePack)
 {
-	TOD_ASSERT(mImageMap.find(thePath) == mImageMap.end());
+	if (theResourcePack.empty())
+	{
+		TOD_ASSERT(mImageMap.find(thePath) == mImageMap.end());
+	}
+	else
+	{
+		TOD_ASSERT(mResourcePackImageMaps[theResourcePack].find(thePath) == mResourcePackImageMaps[theResourcePack].end());
+	}
 
 	ImageRes* aImageRes = new ImageRes();
 	aImageRes->mImage = *theImage;
 	aImageRes->mPath = thePath;
-	mImageMap.insert(ResMap::value_type(thePath, aImageRes));
+	if (theResourcePack.empty())
+		mImageMap.insert(ResMap::value_type(thePath, aImageRes));
+	else
+		mResourcePackImageMaps[theResourcePack].insert(ResMap::value_type(thePath, aImageRes));
 }
 
 bool TodLoadNextResource()
@@ -1150,13 +1160,13 @@ bool TodFindImagePath(Image* theImage, std::string* thePath)
 
 bool TodResourceManager::FindImagePath(Image* theImage, std::string* thePath)
 {
-	for (auto anItr = mImageMap.begin(); anItr != mImageMap.end(); anItr++)
+	for (auto aIt = mImageMap.begin(); aIt != mImageMap.end(); aIt++)
 	{
-		ImageRes* aImageRes = (ImageRes*)anItr->second;
+		ImageRes* aImageRes = (ImageRes*)aIt->second;
 		Image* aImage = (Image*)aImageRes->mImage;
-		if (aImage == theImage)
+		if (aImage && aImage == theImage)
 		{
-			*thePath = anItr->first;
+			*thePath = aIt->first;
 			return true;
 		}
 	}

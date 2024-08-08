@@ -388,8 +388,15 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement)
 		aRes->mAnimInfo.Compute(aNumCels,aBeginDelay,anEndDelay);
 	}
 
-	if (aRes->mInResourcePack && mApp->GetImage(aRes->mPath) != nullptr)
-		DoLoadImage(aRes);
+	if (aRes->mInResourcePack)
+	{
+		DDImage* aImage = mApp->GetImage(aRes->mPath);
+		if (aImage)
+		{
+			DoLoadImage(aRes);
+			delete aImage;
+		}
+	}
 
 	return true;
 }
@@ -1182,11 +1189,29 @@ int	ResourceManager::GetNumResources(const std::string &theGroup)
 ///////////////////////////////////////////////////////////////////////////////
 SharedImageRef ResourceManager::GetImage(const std::string &theId)
 {
-	ResMap::iterator anItr = mImageMap.find(theId);
-	if (anItr != mImageMap.end())
-		return ((ImageRes*)anItr->second)->mImage;
-	else
-		return NULL;
+	ResMap aImageMap = mApp->mResourcePackIndex == -1 ? mImageMap : mResourcePackImageMaps[mApp->mResourcePack];
+	ResMap::iterator anItr = aImageMap.find(theId);
+	ImageRes* aRes;
+	MemoryImage* aImage = NULL;
+	if (anItr != aImageMap.end())
+	{
+		aRes = (ImageRes*)anItr->second;
+		aImage = aRes->mImage;
+		if (aImage != NULL)
+			return aRes->mImage;
+	}
+	if (mApp->mResourcePackIndex != -1 && aImage == NULL)
+	{
+		anItr = mImageMap.find(theId);
+		if (anItr != mImageMap.end())
+		{
+			aRes = (ImageRes*)anItr->second;
+			aImage = aRes->mImage;
+			if (aImage != NULL)
+				return aRes->mImage;
+		}
+	}
+	return NULL;
 }
 	
 ///////////////////////////////////////////////////////////////////////////////
@@ -1217,25 +1242,29 @@ SharedImageRef ResourceManager::GetImageThrow(const std::string &theId)
 {
 	ResMap aImageMap = mApp->mResourcePackIndex == -1 ? mImageMap : mResourcePackImageMaps[mApp->mResourcePack];
 	ResMap::iterator anItr = aImageMap.find(theId);
+	ImageRes* aRes;
+	MemoryImage* aImage = NULL;
 	if (anItr != aImageMap.end())
 	{
-		ImageRes *aRes = (ImageRes*)anItr->second;
-		MemoryImage* aImage = aRes->mImage;
-		if (mApp->mResourcePackIndex != -1 && aImage == NULL)
-		{
-			anItr = mImageMap.find(theId);
-			if (anItr != mImageMap.end())
-			{
-				aRes = (ImageRes*)anItr->second;
-				aImage = aRes->mImage;
-			}
-		}
+		aRes = (ImageRes*)anItr->second;
+		aImage = aRes->mImage;
 		if (aImage != NULL)
 			return aRes->mImage;
-
-		if (mAllowMissingProgramResources && aRes->mFromProgram)
-			return NULL;
 	}
+	if (mApp->mResourcePackIndex != -1 && aImage == NULL)
+	{
+		anItr = mImageMap.find(theId);
+		if (anItr != mImageMap.end())
+		{
+			aRes = (ImageRes*)anItr->second;
+			aImage = aRes->mImage;
+			if (aImage != NULL)
+				return aRes->mImage;
+		}
+	}
+
+	if (mAllowMissingProgramResources && aRes->mFromProgram)
+		return NULL;
 
 	Fail(StrFormat("Image resource not found: %s",theId.c_str()));
 	throw ResourceManagerException(GetErrorText());

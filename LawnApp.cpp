@@ -53,6 +53,7 @@
 #include "SexyAppFramework/Dialog.h"
 #include "SexyAppFramework/resource.h"
 #include "SexyAppFramework/Debug.h"
+#include "Sexy.TodLib/Definition.h"
 
 bool gIsPartnerBuild = false;
 bool gSlowMo = false;  
@@ -123,7 +124,7 @@ LawnApp::LawnApp()
 	mAutoStartLoadingThread = false;
 	mDebugKeysEnabled = false;
 	mIsFastMode = false;
-	mVersion = "v3.2";
+	mVersion = "v4.0";
 	mReconVersion = "PvZ: QE " + mVersion;
 	mTitle = _S("Plants vs. Zombies: Quality Enhanced " + mVersion);
 	mCustomCursorsEnabled = false;
@@ -1340,8 +1341,8 @@ void LawnApp::Init()
 		return;
 	}
 
-	PerfTimer mTimer;
-	mTimer.Start();
+	PerfTimer aTimer;
+	aTimer.Start();
 
 	mProfileMgr->Load();
 
@@ -1367,10 +1368,10 @@ void LawnApp::Init()
 	mAchievements->InitAchievement();
 
 #ifdef _DEBUG
-	int aDuration = mTimer.GetDuration();
+	int aDuration = aTimer.GetDuration();
 	TodTrace("loading: 'profiles' %d ms", aDuration);
 #endif
-	mTimer.Start();
+	aTimer.Start();
 
 	mMusic = new Music();
 	mSoundSystem = new TodFoley();
@@ -1399,20 +1400,35 @@ void LawnApp::Init()
 	mSukhbirCheck = new TypingCheck("sukhbir");
 
 #ifdef _DEBUG
-	aDuration = mTimer.GetDuration();
+	aDuration = aTimer.GetDuration();
 	TodTrace("loading: 'system' %d ms", aDuration);
 #endif
-	mTimer.Start();
+	aTimer.Start();
 
 	ReanimatorLoadDefinitions(gLawnReanimationArray, ReanimationType::NUM_REANIMS);
+
+	TrailLoadDefinitions(gLawnTrailArray, LENGTH(gLawnTrailArray));
+	aDuration = aTimer.GetDuration();
+	TodTrace("loading '%s' %d ms", "trail", aDuration);
+	aTimer.Start();
+	TodHesitationTrace("trail");
+
+	TodParticleLoadDefinitions(gLawnParticleArray, LENGTH(gLawnParticleArray));
+	aDuration = aTimer.GetDuration();
+	TodTrace("loading '%s' %d ms", "particle", aDuration);
+	aTimer.Start();
+	TodHesitationTrace("particle");
+
+	DefinitionLoadResourcePackImages();
+
 	ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_LOADBAR_SPROUT, true);
 	ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_LOADBAR_ZOMBIEHEAD, true);
 
 #ifdef _DEBUG
-	aDuration = mTimer.GetDuration();
+	aDuration = aTimer.GetDuration();
 	TodTrace("loading: 'loaderbar' %d ms", aDuration);
 #endif
-	mTimer.Start();
+	aTimer.Start();
 
 
 	if ((!Is3DAccelerationSupported() || !Is3DAccelerationRecommended()) && mIs3dAccel)
@@ -1926,15 +1942,6 @@ void LawnApp::LoadingThreadProc()
 	TodFoleyInitialize(gLawnFoleyParamArray, LENGTH(gLawnFoleyParamArray));
 
 	TodTrace("loading '%s' %d ms", "stuff", (int)aTimer.GetDuration());
-	aTimer.Start();
-
-	TrailLoadDefinitions(gLawnTrailArray, LENGTH(gLawnTrailArray));
-	TodTrace("loading '%s' %d ms", "trail", (int)aTimer.GetDuration());
-	aTimer.Start();
-	TodHesitationTrace("trail");
-	
-	TodParticleLoadDefinitions(gLawnParticleArray, LENGTH(gLawnParticleArray));
-	aDuration = max(aTimer.GetDuration(), 0);
 	aTimer.Start();
 
 	PreloadForUser();
@@ -3452,7 +3459,14 @@ int LawnApp::GetTotalTrophies(ChallengePage thePage)
 
 int LawnApp::TrophiesNeedForGoldSunflower()
 {
-	return 48 - GetNumTrophies(CHALLENGE_PAGE_SURVIVAL) - GetNumTrophies(CHALLENGE_PAGE_CHALLENGE) - GetNumTrophies(CHALLENGE_PAGE_PUZZLE);
+	int aNum = 0;
+	int aTotal = 0;
+	for (int i = 0; i < ChallengePage::MAX_CHALLENGE_PAGES; i++)
+	{
+		aNum += GetNumTrophies((ChallengePage)i);
+		aTotal += GetTotalTrophies((ChallengePage)i);
+	}
+	return aTotal - aNum;
 }
 
 bool LawnApp::EarnedGoldTrophy()

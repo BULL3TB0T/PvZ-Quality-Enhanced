@@ -10,6 +10,9 @@ TrailParams gLawnTrailArray[(int)TrailType::NUM_TRAILS] = {
 	{ TrailType::TRAIL_ICE, "particles\\IceTrail.trail" }
 };
 
+static std::map<Image*, std::string> gImagePathCache;
+static std::map<std::string, Image*> gImageCache;
+
 TrailDefinition::TrailDefinition()
 {
 	memset(this, 0, sizeof(TrailDefinition));
@@ -74,6 +77,12 @@ void TrailFreeDefinitions()
 	gTrailDefCount = 0;
 	gTrailParamArray = nullptr;
 	gTrailParamArraySize = 0;
+}
+
+void ClearTrailCache()
+{
+	gImagePathCache.clear();
+	gImageCache.clear();
 }
 
 Trail::Trail()
@@ -261,7 +270,31 @@ void Trail::Draw(Graphics* g)
 		aVertArray[aVertNext][2].color = aColorNext.ToInt();
 	}
 
-	g->DrawTrianglesTex(mDefinition->mImage, aVertArray, aTriangleCount);
+	Image* aImage = mDefinition->mImage;
+	if (gSexyAppBase->mResourcePackIndex != -1)
+	{
+		std::string aPath;
+		auto aIt = gImagePathCache.find(aImage);
+		if (aIt != gImagePathCache.end())
+			aPath = aIt->second;
+		else
+		{
+			TodFindImagePath(aImage, &aPath);
+			gImagePathCache[aImage] = aPath;
+		}
+		if (!aPath.empty())
+		{
+			auto aItr = gImageCache.find(aPath);
+			if (aItr != gImageCache.end())
+				aImage = aItr->second;
+			else
+			{
+				aImage = gSexyAppBase->mResourceManager->GetImage(aPath);
+				gImageCache[aPath] = aImage;
+			}
+		}
+	}
+	g->DrawTrianglesTex(aImage, aVertArray, aTriangleCount);
 }
 
 void TrailHolder::InitializeHolder()

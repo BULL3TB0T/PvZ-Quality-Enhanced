@@ -49,8 +49,10 @@ public:
     int                             PickAtlasWidth();
     void                            ArrangeImages(int& theAtlasWidth, int& theAtlasHeight);
     ReanimAtlasImage*               GetEncodedReanimAtlas(Image* theImage);
+    void                            ReloadMemoryImage(int theWidth, int theHeight);
 };
 
 MemoryImage*                        ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight);
+void                                ReloadReanimationAtlases();
 
 #endif

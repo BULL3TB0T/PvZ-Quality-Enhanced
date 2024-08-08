@@ -44,6 +44,13 @@
 #include "memmgr.h"
 #include "../Resources.h"
 #include "../Sexy.TodLib/TodCommon.h"
+#include "../Sexy.TodLib/ReanimAtlas.h"
+#include "../LawnApp.h"
+#include "../Lawn/System/ReanimationLawn.h"
+#include "../Sexy.TodLib/FilterEffect.h"
+#include "../Sexy.TodLib/Reanimator.h"
+#include "../Sexy.TodLib/Definition.h"
+#include "../Sexy.TodLib/Trail.h"
 
 using namespace Sexy;
 
@@ -3870,6 +3877,7 @@ void SexyAppBase::ReloadResourcePacks()
 {
 	if (!mResourceManager->ParseResourcesFile(mResourcesPath, true))
 		ShowResourceError(true);
+	DefinitionLoadResourcePackImages();
 	LoadCurrentResourcePack();
 }
 
@@ -3877,6 +3885,15 @@ void SexyAppBase::LoadCurrentResourcePack()
 {
 	for (std::set<std::string, StringLessNoCase>::iterator aIt = mResourceManager->mLoadedGroups.begin(); aIt != mResourceManager->mLoadedGroups.end(); ++aIt)
 		ExtractResourcesByName(mResourceManager, (*aIt).c_str());
+	if (!mLoaded)
+		return;
+	ReloadReanimationAtlases();
+	ClearReanimationCache();
+	ClearParticleCache();
+	ClearTrailCache();
+	gLawnApp->mReanimatorCache->ReanimatorCacheDispose();
+	gLawnApp->mReanimatorCache->ReanimatorCacheInitialize();
+	FilterEffectDisposeForApp();
 }
 
 SexyString SexyAppBase::GetResourcePackString()

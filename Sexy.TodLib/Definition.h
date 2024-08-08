@@ -123,6 +123,8 @@ bool                    DefMapReadFromCache(void*& theReadPtr, DefMap* theDefMap
 bool                    DefinitionCompileAndLoad(const SexyString& theXMLFilePath, DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionLoadMap(XMLParser* theXmlParser, DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionLoadImage(Image** theImage, const SexyString& theName);
+Image*                  DoDefinitionLoadImage(SexyString thePath, const SexyString theName, SexyString theResourcePack = "");
+void                    DefinitionLoadResourcePackImages();
 bool                    DefinitionLoadFont(Font** theFont, const SexyString& theName);
 bool                    DefinitionLoadXML(const SexyString& theFilename, DefMap* theDefMap, void* theDefinition);
 void                    DefinitionFreeArrayField(DefinitionArrayDef* theArray, DefMap* theDefMap);

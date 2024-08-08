@@ -120,6 +120,9 @@ ParticleParams gLawnParticleArray[(int)ParticleEffect::NUM_PARTICLES] = {
 	{ ParticleEffect::PARTICLE_PERSENT_PICK_UP_ARROW, "particles\\UpsellArrow.xml" },
 };  
 
+static std::map<Image*, std::string> gImagePathCache;
+static std::map<std::string, Image*> gImageCache;
+
 bool TodParticleLoadADef(TodParticleDefinition* theParticleDef, const char* theParticleFileName)
 {
 	TodHesitationBracket(_S("Load Particle %s"), theParticleFileName);
@@ -172,8 +175,6 @@ bool TodParticleLoadADef(TodParticleDefinition* theParticleDef, const char* theP
 			FloatTrackSetDefault(aDef.mClipLeft, 0.0f);
 			FloatTrackSetDefault(aDef.mClipRight, 0.0f);
 			FloatTrackSetDefault(aDef.mAnimationRate, 0.0f);
-			if (aDef.mImage)
-				((MemoryImage*)aDef.mImage)->mD3DFlags |= D3DImageFlags::D3DImageFlag_MinimizeNumSubdivisions;
 		}
 		return true;
 	}
@@ -905,9 +906,33 @@ void RenderParticle(Graphics* g, TodParticle* theParticle, const Color& theColor
 {
 	TodParticleEmitter* aEmitter = theParticle->mParticleEmitter;
 	register TodEmitterDefinition* aEmitterDef = aEmitter->mEmitterDef;
-	Image* aImage = aEmitter->mImageOverride != nullptr ? aEmitter->mImageOverride : aEmitterDef->mImage;  
+	Image* aImage = aEmitter->mImageOverride != nullptr ? aEmitter->mImageOverride : aEmitterDef->mImage;
+	if (gSexyAppBase->mResourcePackIndex != -1)
+	{
+		std::string aPath;
+		auto aIt = gImagePathCache.find(aImage);
+		if (aIt != gImagePathCache.end())
+			aPath = aIt->second;
+		else
+		{
+			TodFindImagePath(aImage, &aPath);
+			gImagePathCache[aImage] = aPath;
+		}
+		if (!aPath.empty())
+		{
+			auto aItr = gImageCache.find(aPath);
+			if (aItr != gImageCache.end())
+				aImage = aItr->second;
+			else
+			{
+				aImage = gSexyAppBase->mResourceManager->GetImage(aPath);
+				gImageCache[aPath] = aImage;
+			}
+		}
+	}
 	if (aImage == nullptr)
 		return;  
+	((MemoryImage*)aImage)->mD3DFlags |= D3DImageFlags::D3DImageFlag_MinimizeNumSubdivisions;
 
 	int aCelWidth = aImage->GetCelWidth();
 	int aCelHeight = aImage->GetCelHeight();
@@ -978,6 +1003,12 @@ void RenderParticle(Graphics* g, TodParticle* theParticle, const Color& theColor
 		if (aEmitter->mExtraAdditiveDrawOverride)
 			theTriangleGroup->AddTriangle(g, aImage, aTransform, g->mClipRect, theColor, Graphics::DRAWMODE_ADDITIVE, aSrcRect);
 	}
+}
+
+void ClearParticleCache()
+{
+	gImagePathCache.clear();
+	gImageCache.clear();
 }
 
 void TodParticleEmitter::DrawParticle(Graphics* g, TodParticle* theParticle, TodTriangleGroup* theTriangleGroup)

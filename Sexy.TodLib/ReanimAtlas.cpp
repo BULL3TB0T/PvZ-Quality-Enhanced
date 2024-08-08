@@ -4,6 +4,12 @@
 #include "ReanimAtlas.h"
 #include "../SexyAppFramework/PerfTimer.h"
 #include "../SexyAppFramework/MemoryImage.h"
+#include "Definition.h"
+
+static std::vector<ReanimAtlas*> gReanimAtlases;
+
+static std::map<Image*, std::string> gImagePathCache;
+static std::map<std::string, Image*> gImageCache;
 
 ReanimAtlas::ReanimAtlas()
 {
@@ -19,6 +25,9 @@ void ReanimAtlas::ReanimAtlasDispose()
 		mMemoryImage = nullptr;
 	}
 	mImageCount = 0;
+	std::vector<ReanimAtlas*>::iterator aIt = std::find(gReanimAtlases.begin(), gReanimAtlases.end(), this);
+	if (aIt != gReanimAtlases.end())
+		gReanimAtlases.erase(aIt);
 }
 
 ReanimAtlasImage* ReanimAtlas::GetEncodedReanimAtlas(Image* theImage)
@@ -29,6 +38,42 @@ ReanimAtlasImage* ReanimAtlas::GetEncodedReanimAtlas(Image* theImage)
 	int aAtlasIndex = (int)theImage - 1;
 	TOD_ASSERT(aAtlasIndex >= 0 && aAtlasIndex < mImageCount);
 	return &mImageArray[aAtlasIndex];
+}
+
+void ReanimAtlas::ReloadMemoryImage(int theWidth, int theHeight)
+{
+	mMemoryImage = ReanimAtlasMakeBlankMemoryImage(theWidth, theHeight);
+	Graphics aMemoryGraphis(mMemoryImage);
+	for (int aImageIndex = 0; aImageIndex < mImageCount; aImageIndex++)
+	{
+		ReanimAtlasImage* aImage = &mImageArray[aImageIndex];
+		Image* anImage = aImage->mOriginalImage;
+		if (gSexyAppBase->mResourcePackIndex != -1)
+		{
+			std::string aPath;
+			auto aIt = gImagePathCache.find(anImage);
+			if (aIt != gImagePathCache.end())
+				aPath = aIt->second;
+			else
+			{
+				TodFindImagePath(anImage, &aPath);
+				gImagePathCache[anImage] = aPath;
+			}
+			if (!aPath.empty())
+			{
+				auto aItr = gImageCache.find(aPath);
+				if (aItr != gImageCache.end())
+					anImage = aItr->second;
+				else
+				{
+					anImage = gSexyAppBase->mResourceManager->GetImage(aPath);
+					gImageCache[aPath] = anImage;
+				}
+			}
+		}
+		aMemoryGraphis.DrawImage(anImage, aImage->mX, aImage->mY);
+	}
+	FixPixelsOnAlphaEdgeForBlending(mMemoryImage);
 }
 
 MemoryImage* ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight)
@@ -238,12 +283,24 @@ void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition* theReanimDef)
 		}
 	}
 
-	mMemoryImage = ReanimAtlasMakeBlankMemoryImage(aAtlasWidth, aAtlasHeight);
-	Graphics aMemoryGraphis(mMemoryImage);
-	for (int aImageIndex = 0; aImageIndex < mImageCount; aImageIndex++)
+	ReloadMemoryImage(aAtlasWidth, aAtlasHeight);
+	gReanimAtlases.push_back(this);
+}
+
+void ReloadReanimationAtlases()
+{
+	gImagePathCache.clear();
+	gImageCache.clear();
+	for (std::vector<ReanimAtlas*>::iterator aIt = gReanimAtlases.begin(); aIt != gReanimAtlases.end(); ++aIt)
 	{
-		ReanimAtlasImage* aImage = &mImageArray[aImageIndex];
-		aMemoryGraphis.DrawImage(aImage->mOriginalImage, aImage->mX, aImage->mY);  
+		ReanimAtlas* aReanimAtlas = *aIt;
+		if (aReanimAtlas->mMemoryImage)
+		{
+			delete aReanimAtlas->mMemoryImage;
+			aReanimAtlas->mMemoryImage = nullptr;
+		}
+		int aAtlasWidth, aAtlasHeight;
+		aReanimAtlas->ArrangeImages(aAtlasWidth, aAtlasHeight);
+		aReanimAtlas->ReloadMemoryImage(aAtlasWidth, aAtlasHeight);
 	}
-	FixPixelsOnAlphaEdgeForBlending(mMemoryImage);  
 }

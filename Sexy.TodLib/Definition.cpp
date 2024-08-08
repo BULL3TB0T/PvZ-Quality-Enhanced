@@ -138,6 +138,7 @@ DefField gReanimatorDefFields[] = {
 DefMap gReanimatorDefMap = { gReanimatorDefFields, sizeof(ReanimatorDefinition), ReanimatorDefinitionConstructor };  
 
 static DefLoadResPath gDefLoadResPaths[4] = { {"IMAGE_", ""}, {"IMAGE_", "particles\\"}, {"IMAGE_REANIM_", "reanim\\"}, {"IMAGE_REANIM_", "images\\"} };  
+static std::map<std::string, std::string> gResNamePaths;
 
 void* ParticleFieldConstructor(void* thePointer)
 {
@@ -264,18 +265,46 @@ bool DefinitionLoadImage(Image** theImage, const SexyString& theName)
         if (aPrefixLen < aNameLen)
         {
             SexyString aPathToTry = aLoadResPath.mDirectory + theName.substr(aPrefixLen, aNameLen);
-            SharedImageRef aImageRef = gSexyAppBase->GetSharedImage(aPathToTry);
-            if ((Image*)aImageRef != nullptr)
+            if (Image* aImage = DoDefinitionLoadImage(aPathToTry, theName))
             {
-                TodHesitationTrace("Load Image '%s'", theName.c_str());
-                TodAddImageToMap(&aImageRef, theName);
-                TodMarkImageForSanding((Image*)aImageRef);
-                *theImage = (Image*)aImageRef;
+                *theImage = aImage;
+                gResNamePaths[theName] = aPathToTry;
                 return true;
             }
         }
     }
     return false;
+}
+
+Image* DoDefinitionLoadImage(SexyString thePath, const SexyString theName, SexyString theResourcePack)
+{
+    SharedImageRef aImageRef = gSexyAppBase->GetSharedImage(thePath, "", nullptr, !theResourcePack.empty());
+    if ((Image*)aImageRef != nullptr)
+    {
+        TodHesitationTrace("Load Image '%s'", theName.c_str());
+        TodAddImageToMap(&aImageRef, theName, theResourcePack);
+        TodMarkImageForSanding((Image*)aImageRef);
+        return (Image*)aImageRef;
+    }
+    return nullptr;
+}
+
+void DefinitionLoadResourcePackImages()
+{
+    WIN32_FIND_DATA aFindFileData;
+    HANDLE aFind = FindFirstFile((gSexyAppBase->mResourcePackPath + "/*").c_str(), &aFindFileData);
+    if (aFind != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            std::string aFolderName = aFindFileData.cFileName;
+            if (aFolderName == "." || aFolderName == "..")
+                continue;
+            for (std::map<std::string, std::string>::iterator aIt = gResNamePaths.begin(); aIt != gResNamePaths.end(); ++aIt)
+                DoDefinitionLoadImage(gSexyAppBase->mResourcePackPath + "\\" + aFolderName + "\\" + aIt->second, aIt->first, aFolderName);
+        } while (FindNextFile(aFind, &aFindFileData) != 0);
+        FindClose(aFind);
+    }
 }
 
 bool DefinitionLoadFont(Font** theFont, const SexyString& theName)

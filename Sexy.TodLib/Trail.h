@@ -115,4 +115,6 @@ public:
 	Trail*					AllocTrailFromDef(int theRenderOrder, TrailDefinition* theDefinition);
 };
 
+void						ClearTrailCache();
+
 #endif

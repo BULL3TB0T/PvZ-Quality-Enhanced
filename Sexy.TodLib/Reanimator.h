@@ -235,6 +235,7 @@ public:
 void                                ReanimationCreateAtlas(ReanimatorDefinition* theDefinition, ReanimationType theReanimationType);
 void                                ReanimationPreload(ReanimationType theReanimationType);
 void                                BlendTransform(ReanimatorTransform* theResult, const ReanimatorTransform& theTransform1, const ReanimatorTransform& theTransform2, float theBlendFactor);
+void                                ClearReanimationCache();
 
 #endif
 

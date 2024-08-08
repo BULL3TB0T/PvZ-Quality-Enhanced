@@ -162,6 +162,9 @@ ReanimationParams gLawnReanimationArray[(int)ReanimationType::NUM_REANIMS] = {
 	{ ReanimationType::REANIM_FLAG,                                 "reanim\\Zombie_FlagPole.reanim",                   0 }
 };
 
+static std::map<Image*, std::string> gImagePathCache;
+static std::map<std::string, Image*> gImageCache;
+
 ReanimatorTransform::ReanimatorTransform() :
 	mTransX(DEFAULT_FIELD_PLACEHOLDER),
 	mTransY(DEFAULT_FIELD_PLACEHOLDER),
@@ -513,6 +516,12 @@ void BlendTransform(ReanimatorTransform* theResult, const ReanimatorTransform& t
 	theResult->mImage = theTransform1.mImage;
 }
 
+void ClearReanimationCache()
+{ 
+	gImagePathCache.clear();
+	gImageCache.clear();
+}
+
 void Reanimation::GetCurrentTransform(int theTrackIndex, ReanimatorTransform* theTransformCurrent)
 {
 	ReanimatorFrameTime aFrameTime;
@@ -605,30 +614,30 @@ void Reanimation::ReanimBltMatrix(Graphics* g, Image* theImage, SexyMatrix3& the
 bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, TodTriangleGroup* theTriangleGroup)
 {
 	ReanimatorTransform aTransform;
-	ReanimatorTrackInstance* aTrackInstance = &mTrackInstances[theTrackIndex];  
-	GetCurrentTransform(theTrackIndex, &aTransform);  
-	int aImageFrame = FloatRoundToInt(aTransform.mFrame);  
-	if (aImageFrame < 0)  
+	ReanimatorTrackInstance* aTrackInstance = &mTrackInstances[theTrackIndex];
+	GetCurrentTransform(theTrackIndex, &aTransform);
+	int aImageFrame = FloatRoundToInt(aTransform.mFrame);
+	if (aImageFrame < 0)
 		return false;
 
 	Color aColor = aTrackInstance->mTrackColor;
-	if (!aTrackInstance->mIgnoreColorOverride)  
+	if (!aTrackInstance->mIgnoreColorOverride)
 	{
-		aColor = ColorsMultiply(aColor, mColorOverride);  
+		aColor = ColorsMultiply(aColor, mColorOverride);
 	}
-	if (g->GetColorizeImages())  
+	if (g->GetColorizeImages())
 	{
-		aColor = ColorsMultiply(aColor, g->GetColor());  
+		aColor = ColorsMultiply(aColor, g->GetColor());
 	}
 	int aImageAlpha = ClampInt(FloatRoundToInt(aTransform.mAlpha * aColor.mAlpha), 0, 255);
-	if (aImageAlpha <= 0)  
+	if (aImageAlpha <= 0)
 	{
 		return false;
 	}
 	aColor.mAlpha = aImageAlpha;
 
 	Color aExtraAdditiveColor;
-	if (mEnableExtraAdditiveDraw)  
+	if (mEnableExtraAdditiveDraw)
 	{
 		aExtraAdditiveColor = mExtraAdditiveColor;
 		aExtraAdditiveColor.mAlpha = ColorComponentMultiply(mExtraAdditiveColor.mAlpha, aImageAlpha);
@@ -641,12 +650,36 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, 
 	}
 
 	Rect aClipRect = g->mClipRect;
-	if (aTrackInstance->mIgnoreClipRect)  
+	if (aTrackInstance->mIgnoreClipRect)
 	{
-		aClipRect = Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);  
+		aClipRect = Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 	}
 
 	Image* aImage = aTransform.mImage;
+	if (gSexyAppBase->mResourcePackIndex != -1)
+	{
+		std::string aPath;
+		auto aIt = gImagePathCache.find(aImage);
+		if (aIt != gImagePathCache.end())
+			aPath = aIt->second;
+		else
+		{
+			TodFindImagePath(aImage, &aPath);
+			OutputDebugString(aPath.c_str());
+			gImagePathCache[aImage] = aPath;
+		}
+		if (!aPath.empty())
+		{
+			auto aItr = gImageCache.find(aPath);
+			if (aItr != gImageCache.end())
+				aImage = aItr->second;
+			else
+			{
+				aImage = gSexyAppBase->mResourceManager->GetImage(aPath);
+				gImageCache[aPath] = aImage;
+			}
+		}
+	}
 	ReanimAtlasImage* aAtlasImage = nullptr;
 	if (mDefinition->mReanimAtlas != nullptr && aImage != nullptr)  
 	{

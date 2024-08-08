@@ -349,4 +349,6 @@ public:
     TodEmitterDefinition*			FindEmitterDefByName(const char* theEmitterName);
 };
 
+void                                ClearParticleCache();
+
 #endif
