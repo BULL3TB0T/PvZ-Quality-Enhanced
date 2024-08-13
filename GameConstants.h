@@ -53,6 +53,10 @@ const int           STORESCREEN_COINBANK_Y = 559;
 const int           STORESCREEN_PAGESTRING_X = 470;
 const int           STORESCREEN_PAGESTRING_Y = 500;
 
+////////////////////////////////////////////////////////////
+///					   QOTL VARIABLES		   			 ///
+////////////////////////////////////////////////////////////
+
 const int			ADVANCEDOPTIONS_MAX_PAGES = 4;
 const int			ADVANCEDOPTIONS_PAGE_Y = 355;
 const int			ADVANCEDOPTIONS_SPEED_X = 284;
@@ -61,11 +65,15 @@ const int			ADVANCEDOPTIONS_SPEED_Y = 128;
 const int			SPEED_MODIFIER_MIN = 2;
 const int			SPEED_MODIFIER_MAX = 9;
 
-////////////////////////////////////////////////////////////
-///						QOTL VARIABLES					 ///
-////////////////////////////////////////////////////////////
-
 const bool			HAS_QUICKPLAY = true;
 const bool			HAS_ACHIEVEMENTS = true;
 const bool			HAS_PAGE_SELECTOR = true;
 const bool			HAS_FAST_FORWARD_BUTTON = true;
+
+////////////////////////////////////////////////////////////
+///			    	 ENHANCED VARIABLES					 ///
+////////////////////////////////////////////////////////////
+
+const bool			OLD_STYLE_SEEDPACKET = false;
+const bool			OLD_STYLE_TOOLTIP = false;
+const bool			USE_ZOMBIE_SEED_VARIANT = true;

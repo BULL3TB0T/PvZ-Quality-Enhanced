@@ -277,22 +277,27 @@ void DrawSeedPacket(Graphics* g, float x, float y, SeedType theSeedType, SeedTyp
 		g->SetColorizeImages(true);
 	}
 
-	int aPacketBackground =
-		theSeedType == SeedType::SEED_IMITATER ? 0 :
-		Plant::IsUpgrade(aSeedType) ? 1 :
-		theSeedType == SeedType::SEED_BEGHOULED_BUTTON_CRATER ? 3 :
-		theSeedType == SeedType::SEED_BEGHOULED_BUTTON_SHUFFLE ? 4 :
-		theSeedType == SeedType::SEED_SLOT_MACHINE_SUN ? 5 :
-		theSeedType == SeedType::SEED_SLOT_MACHINE_DIAMOND ? 6 :
-		theSeedType == SeedType::SEED_ZOMBIQUARIUM_SNORKLE ? 7 :
-		theSeedType == SeedType::SEED_ZOMBIQUARIUM_TROPHY ? 8 : 2;
-	if (theSeedType == SeedType::SEED_ZOMBIE_NORMAL || theSeedType == SeedType::SEED_ZOMBIE_TRAFFIC_CONE || theSeedType == SeedType::SEED_ZOMBIE_POLEVAULTER
-		|| theSeedType == SeedType::SEED_ZOMBIE_PAIL || theSeedType == SeedType::SEED_ZOMBIE_LADDER || theSeedType == SeedType::SEED_ZOMBIE_DIGGER
-		|| theSeedType == SeedType::SEED_ZOMBIE_BUNGEE || theSeedType == SeedType::SEED_ZOMBIE_FOOTBALL || theSeedType == SeedType::SEED_ZOMBIE_BALLOON
-		|| theSeedType == SeedType::SEED_ZOMBIE_SCREEN_DOOR || theSeedType == SeedType::SEED_ZOMBONI || theSeedType == SeedType::SEED_ZOMBIE_POGO
-		|| theSeedType == SeedType::SEED_ZOMBIE_DANCER || theSeedType == SeedType::SEED_ZOMBIE_GARGANTUAR || theSeedType == SeedType::SEED_ZOMBIE_IMP
-		)
+	int aPacketBackground;
+	if (theSeedType == SeedType::SEED_IMITATER)
+		aPacketBackground = 0;
+	else if (Plant::IsUpgrade(aSeedType))
+		aPacketBackground = 1;
+	else if (theSeedType == SeedType::SEED_BEGHOULED_BUTTON_CRATER)
+		aPacketBackground = 3;
+	else if (theSeedType == SeedType::SEED_BEGHOULED_BUTTON_SHUFFLE)
+		aPacketBackground = 4;
+	else if (theSeedType == SeedType::SEED_SLOT_MACHINE_SUN)
+		aPacketBackground = 5;
+	else if (theSeedType == SeedType::SEED_SLOT_MACHINE_DIAMOND)
+		aPacketBackground = 6;
+	else if (theSeedType == SeedType::SEED_ZOMBIQUARIUM_SNORKLE)
+		aPacketBackground = 7;
+	else if (theSeedType == SeedType::SEED_ZOMBIQUARIUM_TROPHY)
+		aPacketBackground = 8;
+	else if ((theSeedType >= SeedType::SEED_ZOMBIE_NORMAL && theSeedType < SeedType::NUM_ZOMBIE_SEEDS) && USE_ZOMBIE_SEED_VARIANT)
 		aPacketBackground = 9;
+	else
+		aPacketBackground = 2;
 
 	if (g->mScaleX > 1)
 	{
@@ -555,9 +560,9 @@ void DrawSeedPacket(Graphics* g, float x, float y, SeedType theSeedType, SeedTyp
 			aCostStr = StrFormat(_S("%d"), Plant::GetCost(theSeedType, theImitaterType));
 		}
 
-		Font* aTextFont = Sexy::FONT_BRIANNETOD12;
+		Font* aTextFont = OLD_STYLE_SEEDPACKET ? Sexy::FONT_PICO129 : Sexy::FONT_BRIANNETOD12;
 		int aTextOffsetX = 32 - aTextFont->StringWidth(aCostStr);
-		int aTextOffsetY = aTextFont->GetAscent() + 52;
+		int aTextOffsetY = aTextFont->GetAscent() + (OLD_STYLE_SEEDPACKET ? 54 : 52);
 		if (g->mScaleX == 1.0f && g->mScaleY == 1.0f)
 		{
 			TodDrawString(g, aCostStr, x + aTextOffsetX, y + aTextOffsetY, aTextFont, Color::Black, DS_ALIGN_LEFT);
@@ -1100,8 +1105,8 @@ void SeedPacket::SetPacketType(SeedType theSeedType, SeedType theImitaterType)
 		aUseSeedType = theImitaterType;
 	}
 
-	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED || mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED_TWIST || 
-		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM || mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND || 
+	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED || mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED_TWIST ||
+		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM || mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND ||
 		mApp->IsIZombieLevel() || mApp->IsScaryPotterLevel() || mApp->IsWhackAZombieLevel() || (mApp->IsSurvivalMode() && mBoard->mChallenge->mSurvivalStage > 0))
 		return;
 
